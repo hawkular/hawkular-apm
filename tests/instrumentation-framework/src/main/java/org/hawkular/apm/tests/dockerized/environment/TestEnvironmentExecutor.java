@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 
 package org.hawkular.apm.tests.dockerized.environment;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.hawkular.apm.tests.dockerized.model.TestEnvironment;
@@ -31,14 +32,14 @@ public interface TestEnvironmentExecutor {
      * @param testEnvironment test environment
      * @return
      */
-    String run(TestEnvironment testEnvironment);
+    List<String> run(TestEnvironment testEnvironment);
 
     /**
      * Stop and remove environment
      *
-     * @param id Id of the environment
+     * @param ids environment ids (containers, docker-compose.yml files)
      */
-    void stopAndRemove(String id);
+    void stopAndRemove(List<String> ids);
 
     /**
      * Frees all resources for accessing/creating environment
@@ -52,7 +53,7 @@ public interface TestEnvironmentExecutor {
      * @param serviceName Service name in running environment.
      * @param script Script to execute
      */
-    void execScript(String id, String serviceName, String script);
+    void execScript(List<String> id, String serviceName, String script);
 
     /**
      * Creates network for the environment.

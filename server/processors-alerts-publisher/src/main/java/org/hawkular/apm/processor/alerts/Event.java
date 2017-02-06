@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -104,7 +104,7 @@ public class Event {
 
     public void initTagsFromProperties(Set<Property> properties) {
         if (properties != null && properties.size() > 0) {
-            properties.forEach(p -> {
+            properties.stream().filter(p -> p.getValue() != null).forEach(p -> {
                 String value = getTags().get(p.getName());
                 getTags().put(p.getName(), value == null ? p.getValue()
                         : String.format("%s,%s", value, p.getValue()));

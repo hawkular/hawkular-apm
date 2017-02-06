@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -150,6 +150,26 @@ module BTM {
         });
       }
     };
+
+    $scope.getTxnsChart = function(theChart) {
+      $scope.txnsChart = theChart;
+    };
+
+    $scope.getFaultsChart = function(theChart) {
+      $scope.faultsChart = theChart;
+    };
+
+    // watch for sidebar changes, to redraw the charts
+    $scope.$watch('hideSidebar', function() {
+      $timeout(function() {
+        if ($scope.txnsChart) {
+          $scope.txnsChart.flush();
+        }
+        if ($scope.faultsChart) {
+          $scope.faultsChart.flush();
+        }
+      });
+    });
 
     $scope.reloadTxnCountGraph = function() {
       let txnCountData = [];

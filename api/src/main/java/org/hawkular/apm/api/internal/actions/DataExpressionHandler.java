@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,12 @@
  */
 package org.hawkular.apm.api.internal.actions;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.DataExpression;
 import org.hawkular.apm.api.model.config.txn.DataSource;
 import org.hawkular.apm.api.model.config.txn.Expression;
@@ -65,7 +68,7 @@ public abstract class DataExpressionHandler extends ExpressionHandler {
      * {@inheritDoc}
      */
     @Override
-    public void init(Processor processor, ProcessorAction action, boolean predicate) {
+    public List<ConfigMessage> init(Processor processor, ProcessorAction action, boolean predicate) {
         DataExpression expr = (DataExpression) getExpression();
 
         source = expr.getSource();
@@ -74,6 +77,8 @@ public abstract class DataExpressionHandler extends ExpressionHandler {
         if (source == DataSource.Content) {
             index = Integer.parseInt(key);
         }
+
+        return new ArrayList<>();
     }
 
     /**

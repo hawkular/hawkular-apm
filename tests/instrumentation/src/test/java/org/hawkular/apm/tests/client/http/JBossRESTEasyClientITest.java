@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,6 +38,7 @@ import org.hawkular.apm.tests.common.ClientTestBase;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
+import io.opentracing.tag.Tags;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -195,9 +196,7 @@ public class JBossRESTEasyClientITest extends ClientTestBase {
         assertFalse("testProducer has no headers", testProducer.getIn().getHeaders().isEmpty());
 
         if (fault) {
-            assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
-            assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE).iterator().next().getValue());
+            assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey()).iterator().next().getValue());
         } else {
 
             if (isProcessContent()) {

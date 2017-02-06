@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.agent.opentracing.propagation.jax;
+package org.hawkular.apm.agent.opentracing.propagation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,44 +31,36 @@ import io.opentracing.propagation.TextMap;
 /**
  * @author gbrown
  */
-public final class HttpServletRequestExtractAdapter implements TextMap {
+public final class JMSMessageExtractAdapter implements TextMap {
 
-    private static final Logger log = Logger.getLogger(HttpServletRequestExtractAdapter.class.getName());
+    private static final Logger log = Logger.getLogger(JMSMessageExtractAdapter.class.getName());
 
-    private final Object request;
-
-    private static Method reqGetHeaderNames;
-    private static Method reqGetHeader;
-
-    public HttpServletRequestExtractAdapter(final Object request) {
-        this.request = request;
-    }
+    private final Map<String, String> map = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    @Override
-    public Iterator<Map.Entry<String, String>> iterator() {
-        Map<String,String> map = new HashMap<>();
+    public JMSMessageExtractAdapter(final Object message) {
         try {
-            if (reqGetHeaderNames == null) {
-                reqGetHeaderNames = request.getClass().getMethod("getHeaderNames");
-            }
-            if (reqGetHeader == null) {
-                reqGetHeader = request.getClass().getMethod("getHeader", String.class);
-            }
-            Enumeration<String> names = (Enumeration<String>)reqGetHeaderNames.invoke(request);
+            Method getPropertyNames = message.getClass().getMethod("getPropertyNames");
+            Method getStringProperty = message.getClass().getMethod("getStringProperty", String.class);
+
+            Enumeration<String> names = (Enumeration<String>)getPropertyNames.invoke(message);
             while (names.hasMoreElements()) {
                 String name = names.nextElement();
-                String value = (String)reqGetHeader.invoke(request, name);
+                String value = (String)getStringProperty.invoke(message, name);
                 map.put(name, value);
             }
         } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException t) {
             log.log(Level.WARNING, "Failed to get headers", t);
         }
+    }
+
+    @Override
+    public Iterator<Map.Entry<String, String>> iterator() {
         return map.entrySet().iterator();
     }
 
     @Override
     public void put(String key, String value) {
-        throw new UnsupportedOperationException("HttpServletRequestExtractAdapter should only be used with Tracer.extract()");
+        throw new UnsupportedOperationException("JMSMessageExtractAdapter should only be used with Tracer.extract()");
     }
 }

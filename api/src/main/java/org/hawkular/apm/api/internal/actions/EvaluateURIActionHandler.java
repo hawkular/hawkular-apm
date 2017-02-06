@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,12 +31,11 @@ import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.EvaluateURIAction;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.hawkular.apm.api.model.trace.Trace;
 import org.hawkular.apm.api.utils.NodeUtil;
 
@@ -92,24 +91,24 @@ public class EvaluateURIActionHandler extends ProcessorActionHandler {
      * @param processor The processor
      */
     @Override
-    public void init(Processor processor) {
-        super.init(processor);
+    public List<ConfigMessage> init(Processor processor) {
+        List<ConfigMessage> configMessages = super.init(processor);
 
         EvaluateURIAction action = (EvaluateURIAction) getAction();
 
         if (action.getTemplate() == null || action.getTemplate().trim().isEmpty()) {
-            ProcessorIssue pi = new ProcessorIssue();
-            pi.setProcessor(processor.getDescription());
-            pi.setAction(getAction().getDescription());
-            pi.setField("template");
-            pi.setSeverity(Severity.Error);
-            pi.setDescription(TEMPLATE_MUST_BE_SPECIFIED);
-
-            if (getIssues() == null) {
-                setIssues(new ArrayList<Issue>());
-            }
-            getIssues().add(0, pi);
+            String message = "Template must be specified";
+            log.severe(processor.getDescription() + ":" + getAction().getDescription() + ":" + message);
+            ConfigMessage configMessage = new ConfigMessage();
+            configMessage.setSeverity(Severity.Error);
+            configMessage.setMessage(message);
+            configMessage.setField("template");
+            configMessage.setProcessor(processor.getDescription());
+            configMessage.setAction(action.getDescription());
+            configMessages.add(0, configMessage);
         }
+
+        return configMessages;
     }
 
     @Override

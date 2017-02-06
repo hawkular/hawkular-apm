@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,6 +116,11 @@ public class PropertyUtil {
     public static final String HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL = "HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL";
 
     /**
+     * Comma separated list of whitelisted file extensions. All others will be ignored by the agent.
+     */
+    public static final String HAWKULAR_APM_AGENT_FILE_EXTENSION_WHITELIST = "HAWKULAR_APM_AGENT_FILE_EXTENSION_WHITELIST";
+
+    /**
      * The maximum number of retry attempts when processing a batch of events.
      */
     public static final String HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT = "HAWKULAR_APM_PROCESSOR_MAX_RETRY_COUNT";
@@ -181,6 +186,11 @@ public class PropertyUtil {
      * Property specifying the service name, to be used in a client-side library
      */
     public static final String HAWKULAR_APM_SERVICE_NAME = "HAWKULAR_APM_SERVICE_NAME";
+
+    /**
+     * Property specifying the build stamp (or service version), to be used in a client-side library
+     */
+    public static final String HAWKULAR_APM_BUILDSTAMP = "HAWKULAR_APM_BUILDSTAMP";
 
     /**
      * Property specifying the env var name for the OpenShift build name.

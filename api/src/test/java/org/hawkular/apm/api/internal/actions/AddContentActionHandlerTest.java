@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 package org.hawkular.apm.api.internal.actions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -57,8 +56,6 @@ public class AddContentActionHandlerTest {
         assertTrue(node.getIn().getContent().containsKey(TEST_NAME_1));
         assertEquals(TEST_VALUE_1, node.getIn().getContent().get(TEST_NAME_1).getValue());
         assertNull(node.getIn().getContent().get(TEST_NAME_1).getType());
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -80,8 +77,6 @@ public class AddContentActionHandlerTest {
         assertTrue(node.getIn().getContent().containsKey(TEST_NAME_1));
         assertEquals(TEST_VALUE_1, node.getIn().getContent().get(TEST_NAME_1).getValue());
         assertEquals(TEST_TYPE_1, node.getIn().getContent().get(TEST_NAME_1).getType());
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -102,8 +97,6 @@ public class AddContentActionHandlerTest {
         assertTrue(node.getOut().getContent().containsKey(TEST_NAME_1));
         assertEquals(TEST_VALUE_1, node.getOut().getContent().get(TEST_NAME_1).getValue());
         assertNull(node.getOut().getContent().get(TEST_NAME_1).getType());
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -114,7 +107,5 @@ public class AddContentActionHandlerTest {
         AddContentActionHandler handler = new AddContentActionHandler(action);
 
         handler.init(new Processor());
-
-        assertNotNull(handler.getIssues());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,7 +74,7 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
     }
 
     @Override
-    public String run(TestEnvironment testEnvironment) {
+    public List<String> run(TestEnvironment testEnvironment) {
         String hostOsMountDir = System.getProperties().getProperty("buildDirectory");
 
 
@@ -109,16 +109,16 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
             throw new EnvironmentException("Could not create or start docker container.", ex);
         }
 
-        return containerResponse.getId();
+        return Arrays.asList(containerResponse.getId());
     }
 
     /**
-     * @param id Id of the environment. The container id.
+     * @param id The container id, will be used only the first one
      * @param serviceName Service name in running environment. Can be null.
      * @param script Script to execute
      */
     @Override
-    public void execScript(String id, String serviceName, String script) {
+    public void execScript(List<String> id, String serviceName, String script) {
         log.info(String.format("Executing script: %s, in container: %s", script, id));
 
         String[] commands = null;
@@ -136,7 +136,7 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
                 scriptExecCommand(script)
             };
 
-            ExecCreateCmdResponse exec = dockerClient.execCreateCmd(id)
+            ExecCreateCmdResponse exec = dockerClient.execCreateCmd(id.get(0))
                     .withCmd(commands)
                     .withAttachStdout(true)
                     .withAttachStderr(true)
@@ -152,13 +152,15 @@ public class DockerImageExecutor extends AbstractDockerBasedEnvironment {
     }
 
     @Override
-    public void stopAndRemove(String id) {
-        log.info(String.format("Cleaning environment %s", id));
-        try {
-            dockerClient.removeContainerCmd(id).withForce(true).exec();
-        } catch (DockerException ex) {
-            log.severe(String.format("Could not remove container: %s", id));
-            throw new EnvironmentException("Could not remove container: " + id, ex);
+    public void stopAndRemove(List<String> ids) {
+        for (String container: ids) {
+            log.info(String.format("Cleaning environment %s", container));
+            try {
+                dockerClient.removeContainerCmd(container).withForce(true).exec();
+            } catch (DockerException ex) {
+                log.severe(String.format("Could not remove container: %s", container));
+                throw new EnvironmentException("Could not remove container: " + container, ex);
+            }
         }
     }
 

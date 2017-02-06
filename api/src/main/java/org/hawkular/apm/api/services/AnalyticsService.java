@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,12 +22,12 @@ import java.util.Set;
 
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
-import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
@@ -138,7 +138,7 @@ public interface AnalyticsService {
      * @param interval The aggregation interval (in milliseconds)
      * @return The completion timeseries statistics
      */
-    List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
+    List<TimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
             Criteria criteria, long interval);
 
     /**
@@ -200,6 +200,18 @@ public interface AnalyticsService {
      */
     Collection<CommunicationSummaryStatistics> getCommunicationSummaryStatistics(String tenantId,
                                 Criteria criteria, boolean asTree);
+
+    /**
+     * This method returns the endpoint response timeseries statistics, for the specified criteria, that were
+     * executed during the time range.
+     *
+     * @param tenantId The tenant id
+     * @param criteria The criteria
+     * @param interval The aggregation interval (in milliseconds)
+     * @return The endpoint timeseries statistics
+     */
+    List<TimeseriesStatistics> getEndpointResponseTimeseriesStatistics(String tenantId,
+            Criteria criteria, long interval);
 
     /**
      * This method returns the list of host names where activities were executed, subject to the supplied

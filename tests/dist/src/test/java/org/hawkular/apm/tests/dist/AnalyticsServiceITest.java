@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,11 +36,11 @@ import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.PropertyType;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
-import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.config.ReportingLevel;
 import org.hawkular.apm.api.model.config.txn.Filter;
@@ -540,7 +540,7 @@ public class AnalyticsServiceITest extends AbstractITest {
         criteria.setTransaction(TESTAPP).setStartTime(0).setEndTime(0);
 
         // Get transaction count
-        List<CompletionTimeseriesStatistics> stats = analyticsService
+        List<TimeseriesStatistics> stats = analyticsService
                 .getTraceCompletionTimeseriesStatistics(null, criteria, 1000);
 
         assertNotNull(stats);
@@ -1136,7 +1136,7 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         // Get transaction count
         Wait.until(() -> analyticsService.getTraceCompletionTimeseriesStatistics(null, criteria, 10000).size() == 1);
-        List<CompletionTimeseriesStatistics> stats = analyticsService
+        List<TimeseriesStatistics> stats = analyticsService
                 .getTraceCompletionTimeseriesStatistics(null, criteria, 10000);
 
         assertNotNull(stats);
@@ -1144,6 +1144,45 @@ public class AnalyticsServiceITest extends AbstractITest {
 
         assertEquals(1749999, stats.get(0).getAverage());
         assertEquals(1, stats.get(0).getCount());
+    }
+
+    @Test
+    public void testGetEndpointResponseTimeseriesStatistics() throws Exception {
+        Trace trace1 = new Trace();
+        trace1.setTraceId("1");
+        trace1.setFragmentId("1");
+        trace1.setTimestamp(TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis()) - FOUR_MS_IN_MICRO_SEC);
+
+        Consumer c1 = new Consumer();
+        c1.setUri("testuri");
+        c1.setTimestamp(trace1.getTimestamp());
+        c1.setDuration(1000000);
+        c1.setEndpointType("HTTP");
+        trace1.getNodes().add(c1);
+
+        tracePublisher.publish(null, Collections.singletonList(trace1));
+
+        // Wait to ensure record persisted
+        Wait.until(() -> traceService.searchFragments(null, new Criteria()).size() == 1);
+
+        // Wait to result derived
+        Wait.until(() -> analyticsService.getTraceCompletions(null, new Criteria()).size() == 1);
+
+        // Query stored trace
+        List<Trace> result = traceService.searchFragments(null, new Criteria());
+
+        assertEquals(1, result.size());
+
+        assertEquals("1", result.get(0).getFragmentId());
+
+        Criteria criteria = new Criteria().setStartTime(0).setEndTime(0);
+
+        // Get transaction count
+        List<TimeseriesStatistics> stats = analyticsService
+                .getEndpointResponseTimeseriesStatistics(null, criteria, 1000);
+
+        assertNotNull(stats);
+        assertEquals(1, stats.size());
     }
 
 }

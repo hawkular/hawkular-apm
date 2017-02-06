@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,18 @@
  */
 package org.hawkular.apm.api.internal.actions;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Property;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.config.txn.SetPropertyAction;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.hawkular.apm.api.model.trace.Trace;
 
 /**
@@ -37,7 +37,7 @@ import org.hawkular.apm.api.model.trace.Trace;
  */
 public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
 
-    public static final String NAME_MUST_BE_SPECIFIED = "Name must be specified";
+    private static final Logger log = Logger.getLogger(SetPropertyActionHandler.class);
 
     /**
      * This constructor initialises the action.
@@ -54,24 +54,24 @@ public class SetPropertyActionHandler extends ExpressionBasedActionHandler {
      * @param processor The processor
      */
     @Override
-    public void init(Processor processor) {
-        super.init(processor);
+    public List<ConfigMessage> init(Processor processor) {
+        List<ConfigMessage> configMessages = super.init(processor);
 
         SetPropertyAction action = (SetPropertyAction) getAction();
 
         if (action.getName() == null || action.getName().trim().isEmpty()) {
-            ProcessorIssue pi = new ProcessorIssue();
-            pi.setProcessor(processor.getDescription());
-            pi.setAction(getAction().getDescription());
-            pi.setField("name");
-            pi.setSeverity(Severity.Error);
-            pi.setDescription(NAME_MUST_BE_SPECIFIED);
-
-            if (getIssues() == null) {
-                setIssues(new ArrayList<Issue>());
-            }
-            getIssues().add(0, pi);
+            String message = "Name must be specified";
+            log.severe(processor.getDescription() + ":" + getAction().getDescription() + ":" + message);
+            ConfigMessage configMessage = new ConfigMessage();
+            configMessage.setSeverity(Severity.Error);
+            configMessage.setMessage(message);
+            configMessage.setField("name");
+            configMessage.setProcessor(processor.getDescription());
+            configMessage.setAction(action.getDescription());
+            configMessages.add(0, configMessage);
         }
+
+        return configMessages;
     }
 
     @Override

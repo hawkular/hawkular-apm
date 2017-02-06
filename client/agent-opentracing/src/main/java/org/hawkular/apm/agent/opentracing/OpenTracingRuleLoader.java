@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,7 +70,11 @@ public class OpenTracingRuleLoader {
         }
 
         try (PrintWriter writer = new PrintWriter(new StringWriter())) {
-            transformer.installScript(scripts, scriptNames, writer);
+            try {
+                transformer.installScript(scripts, scriptNames, writer);
+            } catch (Exception e) {
+                log.log(Level.SEVERE, "Failed to install scripts", e);
+            }
         }
 
         if (log.isLoggable(Level.FINE)) {
@@ -80,6 +84,10 @@ public class OpenTracingRuleLoader {
 
     private static void loadRules(URI uri, List<String> scriptNames,
                     List<String> scripts) throws IOException {
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Load rules from URI = " + uri);
+        }
+
         FileSystem fs = null;
         String entryName = uri.toString();
 
@@ -99,6 +107,9 @@ public class OpenTracingRuleLoader {
 
                 Files.walk(rules).filter(f -> f.toString().endsWith(RULE_FILE_EXTENSION)).forEach(f -> {
                     try {
+                        if (log.isLoggable(Level.FINE)) {
+                            log.fine("Loading rules: " + f.toString());
+                        }
                         scripts.add(new String(Files.readAllBytes(f)));
                         scriptNames.add(f.toString());
                     } catch (IOException ioe) {

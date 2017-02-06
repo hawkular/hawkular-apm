@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,11 @@ package org.hawkular.apm.api.model.analytics;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * This class represents a set of completion statistical values.
+ * This class represents a set of statistical values.
  *
  * @author gbrown
  */
-public class CompletionTimeseriesStatistics {
+public class TimeseriesStatistics {
 
     /**
      * Timestamp in microseconds
@@ -141,7 +141,7 @@ public class CompletionTimeseriesStatistics {
 
     @Override
     public String toString() {
-        return "CompletionTimeseriesStatistics [timestamp=" + timestamp + ", count=" + count + ", faultCount="
+        return "TimeseriesStatistics [timestamp=" + timestamp + ", count=" + count + ", faultCount="
                 + faultCount + ", min=" + min + ", average=" + average + ", max=" + max + "]";
     }
 

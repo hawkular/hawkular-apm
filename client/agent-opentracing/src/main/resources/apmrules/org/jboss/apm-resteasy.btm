@@ -1,0 +1,12 @@
+RULE Populate template URI based on RESTeasy data
+CLASS ^org.jboss.resteasy.core.ResourceMethodInvoker
+METHOD invoke(org.jboss.resteasy.spi.HttpRequest, org.jboss.resteasy.spi.HttpResponse)
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+BIND request : org.jboss.resteasy.spi.HttpRequest = $1;
+     baseUri : java.lang.String = request.getUri().getBaseUri().getPath();
+     resourcePath : java.lang.String = $0.method.getFullpath();
+IF hasSpan()
+DO
+  getSpan().setTag("http.url_template", sanitizePaths(baseUri, resourcePath));
+ENDRULE

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,14 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
-import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.hawkular.apm.api.model.trace.Trace;
 
 /**
@@ -44,8 +42,6 @@ public abstract class ProcessorActionHandler {
 
     private boolean usesHeaders = false;
     private boolean usesContent = false;
-
-    private List<Issue> issues;
 
     public ProcessorActionHandler(ProcessorAction action) {
         this.setAction(action);
@@ -94,25 +90,13 @@ public abstract class ProcessorActionHandler {
     }
 
     /**
-     * @return the issues
-     */
-    public List<Issue> getIssues() {
-        return issues;
-    }
-
-    /**
-     * @param issues the issues to set
-     */
-    public void setIssues(List<Issue> issues) {
-        this.issues = issues;
-    }
-
-    /**
      * This method initialises the process action handler.
      *
      * @param processor The processor
      */
-    public void init(Processor processor) {
+    public List<ConfigMessage> init(Processor processor) {
+        List<ConfigMessage> configMessages = new ArrayList<>();
+
         if (action.getPredicate() != null) {
             try {
                 predicate = ExpressionHandlerFactory.getHandler(action.getPredicate());
@@ -127,23 +111,17 @@ public abstract class ProcessorActionHandler {
                 }
 
             } catch (Throwable t) {
-                if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Failed to initialise predicate for action '"
-                            + action + "'", t);
-                }
-
-                ProcessorIssue pi = new ProcessorIssue();
-                pi.setProcessor(processor.getDescription());
-                pi.setAction(action.getDescription());
-                pi.setSeverity(Severity.Error);
-                pi.setDescription(t.getMessage());
-
-                if (issues == null) {
-                    issues = new ArrayList<Issue>();
-                }
-                issues.add(pi);
+                log.severe("Failed to initialise predicate for action:" + action, t);
+                ConfigMessage configMessage = new ConfigMessage();
+                configMessage.setSeverity(Severity.Error);
+                configMessage.setMessage(t.getMessage());
+                configMessage.setProcessor(processor.getDescription());
+                configMessage.setAction(action.getDescription());
+                configMessages.add(configMessage);
             }
         }
+
+        return configMessages;
     }
 
     /**
@@ -159,11 +137,6 @@ public abstract class ProcessorActionHandler {
      */
     public boolean process(Trace trace, Node node, Direction direction,
             Map<String, ?> headers, Object[] values) {
-
-        // Associate any initialisation issues with the node
-        if (issues != null) {
-            node.getIssues().addAll(issues);
-        }
 
         if (predicate != null) {
             return predicate.test(trace, node, direction, headers, values);

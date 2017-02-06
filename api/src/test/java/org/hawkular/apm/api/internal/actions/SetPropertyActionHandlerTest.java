@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,6 @@
 package org.hawkular.apm.api.internal.actions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.hawkular.apm.api.model.config.Direction;
@@ -60,8 +58,6 @@ public class SetPropertyActionHandlerTest {
         assertEquals(TEST_VALUE_1, trace.getProperties(TEST_NAME_1).iterator().next().getValue());
         assertTrue(node.hasProperty(TEST_NAME_1));
         assertEquals(TEST_VALUE_1, node.getProperties(TEST_NAME_1).iterator().next().getValue());
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -72,7 +68,5 @@ public class SetPropertyActionHandlerTest {
         SetPropertyActionHandler handler = new SetPropertyActionHandler(action);
 
         handler.init(new Processor());
-
-        assertNotNull(handler.getIssues());
     }
 }

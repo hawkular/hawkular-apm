@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@
 package org.hawkular.apm.api.internal.actions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.txn.AddCorrelationIdAction;
@@ -64,7 +63,5 @@ public class AddCorrelationIdActionHandlerTest {
         assertEquals(1, node.getCorrelationIds().size());
         assertEquals(TEST_VALUE_1, node.getCorrelationIds().get(0).getValue());
         assertEquals(scope, node.getCorrelationIds().get(0).getScope());
-
-        assertNull(handler.getIssues());
     }
 }

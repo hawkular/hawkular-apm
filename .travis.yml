@@ -9,6 +9,8 @@ cache:
   directories:
   - $HOME/.m2/repository
   - $HOME/.m2/wrapper
+  - ui/target/gulp-build/libs
+  - ui/target/gulp-build/node_modules
 
 notifications:
   irc:

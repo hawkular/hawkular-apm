@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,14 +28,14 @@ module InstanceViewDiagram {
     //private render = new dagreD3.render();
     public link: (scope, elm, attrs, ctrl) => any;
 
-    constructor(public $compile, hkDurationFilter) {
+    constructor(public $compile, $sce, hkDurationFilter) {
       // necessary to ensure 'this' is this object <sigh>
       this.link = (scope, elm, attrs, ctrl) => {
-        return this.doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter);
+        return this.doLink(scope, elm, attrs, ctrl, $compile, $sce, hkDurationFilter);
       };
     }
 
-    private doLink(scope, elm, attrs, ctrl, $compile, hkDurationFilter): void {
+    private doLink(scope, elm, attrs, ctrl, $compile, $sce, hkDurationFilter): void {
 
       // Severity strip width (must be pair)
       let stripeWidth = 12;
@@ -194,15 +194,22 @@ module InstanceViewDiagram {
           label += '<div class="name">' + uri + '</div>';
 
           let nodeTT = '<ul>';
+          let hasFault = false;
           _.each(d.properties, (property) => {
             if (!!property.value) {
               nodeTT += ('<li class=\'tt-prop\'><strong>' + property.name + '</strong> ' + property.value + '</li>');
+              if (property.name === 'fault' ||
+                (property.name === 'error' && property.value.toLowerCase() !== 'false')) {
+                hasFault = true;
+              }
             }
           });
           nodeTT += '</ul>';
+          let tooltipId = d.customId.replace(/\W+/g, '_');
+          scope[tooltipId] = $sce.trustAsHtml(nodeTT);
 
           let html = '<div class="node-label"' + ((nodeTT.length > 9) ? (' tooltip-append-to-body="true" ' +
-            'tooltip-class="graph-tooltip" tooltip-html-unsafe="' + nodeTT + '"') : '') + '>';
+            'tooltip-class="graph-tooltip" tooltip-html="' + tooltipId + '"') : '') + '>';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt spawn"></i></div>';
           } else {
@@ -212,6 +219,11 @@ module InstanceViewDiagram {
             label += '    ' + hkDurationFilter(d.duration);
             label += '  </span>';
             label += '</span>';
+            if (hasFault) {
+              label += '<span class="pull-right fault-indicator">';
+              label += '  <i class="fa fa-warning"></i>';
+              label += '</span>';
+            }
           }
           label += '</div>';
           html += label;

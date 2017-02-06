@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,24 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.hawkular.apm.server.jms;
+@import "../../../libs/bootstrap/less/variables.less";
+@import "../../../libs/bootstrap/less/mixins.less";
+@import "../../../libs/patternfly/dist/less/variables.less";
 
-import org.hawkular.apm.api.model.events.Notification;
-import org.hawkular.apm.server.api.services.NotificationPublisher;
 
-/**
- * This class represents the notification JMS publisher.
- *
- * @author gbrown
- */
-public class NotificationPublisherJMS extends AbstractPublisherJMS<Notification>
-        implements NotificationPublisher {
+// Variables
 
-    private static final String DESTINATION = "java:/Notifications";
+@danger-bg:                                                         rgba(204,0,0,0.07);
 
-    @Override
-    protected String getDestinationURI() {
-        return DESTINATION;
-    }
+/* Error message handling */
 
-}
+label.error {color: red}

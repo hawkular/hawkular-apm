@@ -13,7 +13,7 @@ DO
   		.withTag("http.query", uri.getQuery()),
   		getSpan());
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.apache.HttpMessageInjectAdapter($2));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpMessageInjectAdapter($2));
 ENDRULE
 
 RULE org.apache.http.client(2) Apache HttpClient Producer Sync Response Check Fault
@@ -23,8 +23,7 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
 IF hasSpan() && $!.getStatusLine().getStatusCode() >= 400
 DO
-  getSpan().setTag("fault.code",String.valueOf($!.getStatusLine().getStatusCode()))
-	.setTag("fault",$!.getStatusLine().getReasonPhrase());
+  getSpan().setTag("http.status_code",String.valueOf($!.getStatusLine().getStatusCode()));
 ENDRULE
 
 RULE org.apache.http.client(3) Apache HttpClient Producer Sync Response
@@ -34,5 +33,16 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
 IF hasSpan()
 DO
+  finishSpan();
+ENDRULE
+
+RULE org.apache.http.client(4) Apache HttpClient Producer Sync Exception
+CLASS ^org.apache.http.impl.client.CloseableHttpClient
+METHOD doExecute
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT EXCEPTION EXIT
+IF hasSpan()
+DO
+  getSpan().setTag("error",true);
   finishSpan();
 ENDRULE

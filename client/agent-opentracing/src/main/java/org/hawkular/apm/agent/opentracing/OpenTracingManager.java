@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,10 @@ package org.hawkular.apm.agent.opentracing;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
@@ -57,7 +59,20 @@ public class OpenTracingManager extends Helper {
 
     private static long expiryInterval = 60000;
 
+    // allow access from test
+    protected static Set<String> fileExtensionWhitelist = new HashSet<>();
+
     static {
+        String whitelist = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_AGENT_FILE_EXTENSION_WHITELIST, "jsp");
+        if (whitelist != null) {
+            for(String item : whitelist.split(",")) {
+                fileExtensionWhitelist.add(item);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Added file extension whitelist item: " + item);
+                }
+            }
+        }
+
         String time = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_AGENT_STATE_EXPIRY_INTERVAL);
         if (time != null) {
             expiryInterval = Long.parseLong(time);
@@ -251,20 +266,40 @@ public class OpenTracingManager extends Helper {
     }
 
     /**
-     * This method determines whether there is a current span available
+     * This method determines whether there is a span available
      * associated with the supplied id.
      *
-     * @return Whether a current span exists with the id
+     * @return Whether a span exists with the id
      */
     public boolean hasSpanWithId(String id) {
         TraceState ts = traceState.get();
 
-        if (ts != null) {
-            String currentId = ts.peekId();
+        if (id != null && ts != null) {
+            boolean spanFound = ts.getSpanForId(id) != null;
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("Has span with id = " + id + "? " + currentId.equals(id));
+                log.finest("Has span with id = " + id + "? " + spanFound);
             }
-            return currentId.equals(id);
+            return spanFound;
+        }
+
+        return false;
+    }
+
+    /**
+     * This method determines whether the current span is
+     * associated with the supplied id.
+     *
+     * @return Whether the current span is associated with the id
+     */
+    public boolean isCurrentSpan(String id) {
+        TraceState ts = traceState.get();
+
+        if (id != null && ts != null) {
+            boolean spanFound = ts.peekId().equals(id);
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Is current span id = " + id + "? " + spanFound);
+            }
+            return spanFound;
         }
 
         return false;
@@ -412,9 +447,30 @@ public class OpenTracingManager extends Helper {
      * @return Whether the path is valid for monitoring
      */
     public boolean includePath(String path) {
-        // Determine if the path is NOT hawkular-apm related and
-        // the final part of the path is NOT a filename (with extension)
-        return !path.startsWith("/hawkular/apm") && (path.lastIndexOf('.') <= path.lastIndexOf('/'));
+        if (path.startsWith("/hawkular/apm")) {
+            return false;
+        }
+
+        int dotPos = path.lastIndexOf('.');
+        int slashPos = path.lastIndexOf('/');
+        if (dotPos <= slashPos) {
+            return true;
+        }
+
+        if (!fileExtensionWhitelist.isEmpty()) {
+            String extension = path.substring(dotPos + 1);
+            if (fileExtensionWhitelist.contains(extension)) {
+                if (log.isLoggable(Level.FINER)) {
+                    log.finer("Path " + path + " not skipped, because of whitelist");
+                }
+                return true;
+            }
+        }
+
+        if (log.isLoggable(Level.FINER)) {
+            log.finer("Path " + path + " skipped");
+        }
+        return false;
     }
 
     /**
@@ -460,6 +516,41 @@ public class OpenTracingManager extends Helper {
     }
 
     /**
+     * This method determines whether the supplied object is an
+     * instance of the supplied class/interface.
+     *
+     * @param obj The object
+     * @param clz The class
+     * @return Whether the object is an instance of the class
+     */
+    public boolean isInstanceOf(Object obj, Class<?> clz) {
+        if (obj == null || clz == null) {
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("isInstanceOf error: obj=" + obj + " clz=" + clz);
+            }
+            return false;
+        }
+        return clz.isInstance(obj);
+    }
+
+    /**
+     * Helper to remove duplicate slashes
+     * @param baseUri      the base URI, usually in the format "/context/restapp/"
+     * @param resourcePath the resource path, usually in the format "/resource/method/record"
+     * @return The two parameters joined, with the double slash between them removed, like "/context/restapp/resource/method/record"
+     */
+    public String sanitizePaths(String baseUri, String resourcePath) {
+        if (baseUri.endsWith("/") && resourcePath.startsWith("/")) {
+            return baseUri.substring(0, baseUri.length()-1) + resourcePath;
+        }
+
+        if ((!baseUri.endsWith("/")) && (!resourcePath.startsWith("/"))) {
+            return baseUri + "/" + resourcePath;
+        }
+        return baseUri + resourcePath;
+    }
+
+    /**
      * This class represents the state information being accumulated for a
      * trace instance.
      *
@@ -470,12 +561,16 @@ public class OpenTracingManager extends Helper {
         private Deque<Span> spanStack = new ArrayDeque<>();
         private Deque<String> idStack = new ArrayDeque<>();
         private Map<String, Object> variables = new HashMap<>();
+        private Map<String, Span> identifiedSpans = new HashMap<>();
 
         private long expire;
 
         public void pushSpan(Span span, String id) {
             spanStack.push(span);
             idStack.push(id == null ? "" : id);
+            if (id != null) {
+                identifiedSpans.put(id, span);
+            }
         }
 
         public Span popSpan() {
@@ -495,6 +590,10 @@ public class OpenTracingManager extends Helper {
                 return null;
             }
             return idStack.peek();
+        }
+
+        public Span getSpanForId(String id) {
+            return identifiedSpans.get(id);
         }
 
         public boolean isFinished() {

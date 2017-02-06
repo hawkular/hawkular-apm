@@ -23,7 +23,7 @@ services:
 # Hawkular APM specific
     extra_hosts:
       - "hawkular-apm:172.16.158.1"
-    env_file: ../../apmagent-env-variables.properties
+    env_file: ../apmagent-env-variables.properties
     volumes:
       - .:/opt/hawkular-apm-test:ro,z
       - ../..:/opt/hawkular-apm-agent:ro,z

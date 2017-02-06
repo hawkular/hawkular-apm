@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,10 +32,10 @@ import javax.ws.rs.core.Response;
 
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
-import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
+import org.hawkular.apm.api.model.analytics.TimeseriesStatistics;
 import org.hawkular.apm.api.services.AnalyticsService;
 import org.hawkular.apm.api.services.Criteria;
 import org.hawkular.apm.server.rest.entity.BoundEndpointsRequest;
@@ -162,7 +162,8 @@ public class AnalyticsHandler extends BaseHandler {
 
     @GET
     @Path("trace/completion/times")
-    @ApiOperation(value = "Get the trace completion times associated with criteria", response = List.class)
+    @ApiOperation(value = "Get the trace completion times associated with criteria (in descending time order)",
+        response = List.class)
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Success"),
             @ApiResponse(code = 500, message = "Internal server error") })
@@ -190,7 +191,7 @@ public class AnalyticsHandler extends BaseHandler {
         return withErrorHandler(() -> {
             Criteria criteria = request.toCriteria();
             log.tracef("Get trace completion timeseries statistics for criteria [%s] interval [%s]", criteria, request.getInterval());
-            List<CompletionTimeseriesStatistics> stats = analyticsService.getTraceCompletionTimeseriesStatistics(
+            List<TimeseriesStatistics> stats = analyticsService.getTraceCompletionTimeseriesStatistics(
                     getTenant(request),
                     criteria,
                     request.getInterval()
@@ -290,6 +291,32 @@ public class AnalyticsHandler extends BaseHandler {
                     .entity(stats)
                     .type(APPLICATION_JSON_TYPE)
                     .build();
+        });
+    }
+
+    @GET
+    @Path("endpoint/response/statistics")
+    @ApiOperation(value = "Get the endpoint response timeseries statistics associated with criteria", response = List.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Success"),
+            @ApiResponse(code = 500, message = "Internal server error") })
+    public Response getEndpointResponseTimeseriesStatistics(@BeanParam IntervalCriteriaRequest request) {
+        return withErrorHandler(() -> {
+            Criteria criteria = request.toCriteria();
+            log.tracef("Get endpoint response timeseries statistics for criteria [%s] interval [%s]", criteria, request.getInterval());
+            List<TimeseriesStatistics> stats = analyticsService.getEndpointResponseTimeseriesStatistics(
+                    getTenant(request),
+                    criteria,
+                    request.getInterval()
+            );
+            log.tracef("Got endpoint response timeseries statistics for criteria [%s] = %s", criteria, stats);
+
+            return Response
+                    .status(Response.Status.OK)
+                    .entity(stats)
+                    .type(APPLICATION_JSON_TYPE)
+                    .build();
+
         });
     }
 

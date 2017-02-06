@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,27 +16,23 @@
  */
 package org.hawkular.apm.api.internal.actions;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
-import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.ExpressionBasedAction;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.hawkular.apm.api.model.trace.Trace;
 
 /**
  * @author gbrown
  */
 public abstract class ExpressionBasedActionHandler extends ProcessorActionHandler {
-
-    public static final String EXPRESSION_HAS_NOT_BEEN_DEFINED = "Expression has not been defined";
 
     private static final Logger log = Logger.getLogger(ExpressionBasedActionHandler.class.getName());
 
@@ -57,8 +53,8 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
      * @param processor The processor
      */
     @Override
-    public void init(Processor processor) {
-        super.init(processor);
+    public List<ConfigMessage> init(Processor processor) {
+        List<ConfigMessage> configMessages = super.init(processor);
         if (((ExpressionBasedAction) getAction()).getExpression() != null) {
             try {
                 expression = ExpressionHandlerFactory.getHandler(
@@ -73,41 +69,29 @@ public abstract class ExpressionBasedActionHandler extends ProcessorActionHandle
                     setUsesContent(expression.isUsesContent());
                 }
             } catch (Throwable t) {
-                if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Failed to compile expression for action '"
-                            + getAction() + "'", t);
-                }
-
-                ProcessorIssue pi = new ProcessorIssue();
-                pi.setProcessor(processor.getDescription());
-                pi.setAction(getAction().getDescription());
-                pi.setField("expression");
-                pi.setSeverity(Severity.Error);
-                pi.setDescription(t.getMessage());
-
-                if (getIssues() == null) {
-                    setIssues(new ArrayList<Issue>());
-                }
-                getIssues().add(pi);
+                log.severe(processor.getDescription() + ":" + getAction().getDescription()
+                     + ":Failed to compile expression");
+                ConfigMessage configMessage = new ConfigMessage();
+                configMessage.setSeverity(Severity.Error);
+                configMessage.setMessage(t.getMessage());
+                configMessage.setField("expression");
+                configMessage.setProcessor(processor.getDescription());
+                configMessage.setAction(getAction().getDescription());
+                configMessages.add(configMessage);
             }
         } else {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("No action expression defined for processor action= "
-                        + getAction());
-            }
-
-            ProcessorIssue pi = new ProcessorIssue();
-            pi.setProcessor(processor.getDescription());
-            pi.setAction(getAction().getDescription());
-            pi.setField("expression");
-            pi.setSeverity(Severity.Error);
-            pi.setDescription(EXPRESSION_HAS_NOT_BEEN_DEFINED);
-
-            if (getIssues() == null) {
-                setIssues(new ArrayList<Issue>());
-            }
-            getIssues().add(pi);
+            String message = "Expression has not been defined";
+            log.severe(processor.getDescription() + ":" + getAction().getDescription() + ":" + message);
+            ConfigMessage configMessage = new ConfigMessage();
+            configMessage.setSeverity(Severity.Error);
+            configMessage.setMessage(message);
+            configMessage.setField("expression");
+            configMessage.setProcessor(processor.getDescription());
+            configMessage.setAction(getAction().getDescription());
+            configMessages.add(configMessage);
         }
+
+        return configMessages;
     }
 
     /**

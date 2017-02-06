@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,22 +60,14 @@ public class Constants {
     public static final String PROP_PRINCIPAL = "principal";
 
     /**
-     * Property key representing the fault
+     * Property key representing the fault. A 'fault' will represent
+     * the non-normal result of a call to a business service. For example,
+     * if requesting a user's account, then a fault may be "Account Not Found".
+     * Communication protocol errors will be recorded in protocol specific
+     * tags, such as "http.status_code".
      * {@link org.hawkular.apm.api.model.Property#name}
      */
     public static final String PROP_FAULT = "fault";
-
-    /**
-     * Property key representing the fault code
-     * {@link org.hawkular.apm.api.model.Property#name}
-     */
-    public static final String PROP_FAULT_CODE = "fault.code";
-
-    /**
-     * Property key representing the fault description
-     * {@link org.hawkular.apm.api.model.Property#name}
-     */
-    public static final String PROP_FAULT_DESCRIPTION = "fault.description";
 
     /**
      * Property key representing the database statement
@@ -88,6 +80,12 @@ public class Constants {
      * {@link org.hawkular.apm.api.model.Property#name}
      */
     public static final String PROP_HTTP_QUERY = "http.query";
+
+    /**
+     * Property key representing the HTTP URL template string
+     * {@link org.hawkular.apm.api.model.Property#name}
+     */
+    public static final String PROP_HTTP_URL_TEMPLATE = "http.url_template";
 
     /**
      * Represents database component type of

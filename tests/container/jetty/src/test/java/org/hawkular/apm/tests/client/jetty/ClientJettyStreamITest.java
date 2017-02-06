@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,6 +58,8 @@ import org.hawkular.apm.tests.common.Wait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import io.opentracing.tag.Tags;
 
 /**
  * @author gbrown
@@ -202,9 +204,7 @@ public class ClientJettyStreamITest extends ClientTestBase {
         Producer testProducer = producers.get(0);
 
         assertEquals(path, testProducer.getUri());
-        assertEquals("ConnectException", producers.get(0).getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-        assertEquals("Connection refused", producers.get(0).getProperties(Constants.PROP_FAULT_DESCRIPTION)
-                .iterator().next().getValue());
+        assertEquals("Connection refused", producers.get(0).getProperties(Constants.PROP_FAULT).iterator().next().getValue());
     }
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
@@ -322,9 +322,7 @@ public class ClientJettyStreamITest extends ClientTestBase {
                 testConsumer.getIn().getHeaders().containsKey(TEST_HEADER));
 
         if (fault) {
-            assertEquals(1, testProducer.getProperties(Constants.PROP_FAULT).size());
-            assertEquals("Unauthorized", testProducer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401", testProducer.getProperties(Constants.PROP_FAULT_CODE)
+            assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey())
                     .iterator().next().getValue());
         } else {
 

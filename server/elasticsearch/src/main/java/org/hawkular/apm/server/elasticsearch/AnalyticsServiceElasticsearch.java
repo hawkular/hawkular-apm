@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,16 +67,17 @@ import org.elasticsearch.search.aggregations.metrics.avg.AvgBuilder;
 import org.elasticsearch.search.aggregations.metrics.percentiles.PercentilesBuilder;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.elasticsearch.search.aggregations.metrics.stats.StatsBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics.ConnectionStatistics;
-import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics.NodeComponentTypeStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.config.txn.TransactionConfig;
 import org.hawkular.apm.api.model.events.ApmEvent;
@@ -229,6 +230,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
 
         BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
         SearchRequestBuilder request = getTraceCompletionRequest(index, criteria, query, criteria.getMaxResponseSize());
+        request.addSort(ElasticsearchUtil.TIMESTAMP_FIELD, SortOrder.DESC);
         SearchResponse response = getSearchResponse(request);
         if (response.isTimedOut()) {
             return null;
@@ -266,7 +268,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     @Override
-    public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId, Criteria criteria, long interval) {
+    public List<TimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId, Criteria criteria, long interval) {
         String index = client.getIndex(tenantId);
         if (!refresh(index)) {
             return null;
@@ -305,7 +307,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         DateHistogram histogram = response.getAggregations().get("histogram");
 
         return histogram.getBuckets().stream()
-                .map(AnalyticsServiceElasticsearch::toCompletionTimeseriesStatistics)
+                .map(AnalyticsServiceElasticsearch::toTimeseriesStatistics)
                 .collect(Collectors.toList());
     }
 
@@ -382,7 +384,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(componentsBuilder);
 
         BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, NodeDetails.class);
-        SearchRequestBuilder request = getNodeSearchRequest(index, criteria, query, 0)
+        SearchRequestBuilder request = getNodeDetailsRequest(index, criteria, query, 0)
                 .addAggregation(histogramBuilder);
 
         SearchResponse response = getSearchResponse(request);
@@ -463,7 +465,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
                 .subAggregation(missingComponentsBuilder);
 
         BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, NodeDetails.class);
-        SearchRequestBuilder request = getNodeSearchRequest(index, criteria, query, 0)
+        SearchRequestBuilder request = getNodeDetailsRequest(index, criteria, query, 0)
                 .addAggregation(nodesBuilder);
 
         SearchResponse response = getSearchResponse(request);
@@ -829,6 +831,98 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
     }
 
     @Override
+    public List<TimeseriesStatistics> getEndpointResponseTimeseriesStatistics(String tenantId, Criteria criteria, long interval) {
+        String index = client.getIndex(tenantId);
+        if (!refresh(index)) {
+            return null;
+        }
+
+        StatsBuilder statsBuilder = AggregationBuilders
+                .stats("stats")
+                .field(ElasticsearchUtil.ELAPSED_FIELD);
+
+        // TODO: HWKAPM-679 (related to HWKAPM-675), faults now recorded as properties. However this
+        // current results in the fault count being an actual count of fault properties, where
+        // the original intention of the fault count is the number of txns that have been affected
+        // by a fault.
+        FilterAggregationBuilder faultCountBuilder = AggregationBuilders
+                .filter("faults")
+                .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, Constants.PROP_FAULT))));
+
+        NestedBuilder nestedFaultCountBuilder = AggregationBuilders
+                .nested("nested")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
+                .subAggregation(faultCountBuilder);
+
+        DateHistogramBuilder histogramBuilder = AggregationBuilders
+                .dateHistogram("histogram")
+                .interval(interval)
+                .field(ElasticsearchUtil.TIMESTAMP_FIELD)
+                .subAggregation(statsBuilder)
+                .subAggregation(nestedFaultCountBuilder);
+
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, NodeDetails.class);
+        // Only interested in service endpoints, so just Consumer nodes
+        query.must(QueryBuilders.termQuery(ElasticsearchUtil.TYPE_FIELD, "Consumer"));
+
+        SearchRequestBuilder request = getNodeDetailsRequest(index, criteria, query, 0)
+                .addAggregation(histogramBuilder);
+
+        SearchResponse response = getSearchResponse(request);
+        DateHistogram histogram = response.getAggregations().get("histogram");
+
+        return histogram.getBuckets().stream()
+                .map(AnalyticsServiceElasticsearch::toTimeseriesStatistics)
+                .collect(Collectors.toList());
+    }
+
+    protected List<Cardinality> getEndpointPropertyDetails(String tenantId, Criteria criteria, String property) {
+        String index = client.getIndex(tenantId);
+        if (!refresh(index)) {
+            return null;
+        }
+
+        BoolQueryBuilder nestedQuery = QueryBuilders.boolQuery()
+                .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property));
+
+        BoolQueryBuilder query = buildQuery(criteria, ElasticsearchUtil.TRANSACTION_FIELD, CompletionTime.class);
+        // Only interested in the initial node within a service invocation
+        query = query.must(QueryBuilders.matchQuery("initial", "true"));
+        query.must(QueryBuilders.nestedQuery("properties", nestedQuery));
+
+        TermsBuilder cardinalityBuilder = AggregationBuilders
+                .terms("cardinality")
+                .field(ElasticsearchUtil.PROPERTIES_VALUE_FIELD)
+                .order(Order.aggregation("_count", false))
+                .size(criteria.getMaxResponseSize());
+
+        FilterAggregationBuilder filterAggBuilder = AggregationBuilders
+                .filter("nestedfilter")
+                .filter(FilterBuilders.queryFilter(QueryBuilders.boolQuery()
+                        .must(QueryBuilders.matchQuery(ElasticsearchUtil.PROPERTIES_NAME_FIELD, property))))
+                .subAggregation(cardinalityBuilder);
+
+        NestedBuilder nestedBuilder = AggregationBuilders
+                .nested("nested")
+                .path(ElasticsearchUtil.PROPERTIES_FIELD)
+                .subAggregation(filterAggBuilder);
+
+        SearchRequestBuilder request = getNodeDetailsRequest(index, criteria, query, 0)
+                .addAggregation(nestedBuilder);
+
+        SearchResponse response = getSearchResponse(request);
+        Nested nested = response.getAggregations().get("nested");
+        InternalFilter filteredAgg = nested.getAggregations().get("nestedfilter");
+        Terms terms = filteredAgg.getAggregations().get("cardinality");
+
+        return terms.getBuckets().stream()
+                .map(AnalyticsServiceElasticsearch::toCardinality)
+                .sorted((one, another) -> one.getValue().compareTo(another.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Set<String> getHostNames(String tenantId, Criteria criteria) {
         String index = client.getIndex(tenantId);
         if (!refresh(index)) {
@@ -945,14 +1039,14 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         return card;
     }
 
-    private static CompletionTimeseriesStatistics toCompletionTimeseriesStatistics(Bucket bucket) {
+    private static TimeseriesStatistics toTimeseriesStatistics(Bucket bucket) {
         Stats stat = bucket.getAggregations().get("stats");
 
         long faultCount = bucket.getAggregations()
                 .<Nested>get("nested").getAggregations()
                 .<Filter>get("faults").getDocCount();
 
-        CompletionTimeseriesStatistics s = new CompletionTimeseriesStatistics();
+        TimeseriesStatistics s = new TimeseriesStatistics();
         s.setTimestamp(bucket.getKeyAsDate().getMillis());
         s.setAverage((long)stat.getAvg());
         s.setMin((long)stat.getMin());
@@ -1037,7 +1131,7 @@ public class AnalyticsServiceElasticsearch extends AbstractAnalyticsService {
         return getBaseSearchRequestBuilder(TRACE_COMPLETION_TIME_TYPE, index, criteria, query, maxSize);
     }
 
-    private SearchRequestBuilder getNodeSearchRequest(String index, Criteria criteria, BoolQueryBuilder query, int maxSize) {
+    private SearchRequestBuilder getNodeDetailsRequest(String index, Criteria criteria, BoolQueryBuilder query, int maxSize) {
         return getBaseSearchRequestBuilder(NODE_DETAILS_TYPE, index, criteria, query, maxSize);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,17 +17,18 @@
 package org.hawkular.apm.api.internal.actions;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.Severity;
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Expression;
 import org.hawkular.apm.api.model.config.txn.LiteralExpression;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.hawkular.apm.api.model.trace.Trace;
 
 /**
@@ -36,6 +37,8 @@ import org.hawkular.apm.api.model.trace.Trace;
  * @author gbrown
  */
 public class LiteralExpressionHandler extends ExpressionHandler {
+
+    private static final Logger log = Logger.getLogger(LiteralExpressionHandler.class);
 
     private boolean predicateResult = false;
 
@@ -47,26 +50,26 @@ public class LiteralExpressionHandler extends ExpressionHandler {
     }
 
     @Override
-    public void init(Processor processor, ProcessorAction action, boolean predicate) {
-        LiteralExpression expr = (LiteralExpression) getExpression();
+    public List<ConfigMessage> init(Processor processor, ProcessorAction action, boolean predicate) {
+        List<ConfigMessage> configMessages = new ArrayList<>();
 
         if (predicate) {
+            LiteralExpression expr = (LiteralExpression) getExpression();
             if (!expr.getValue().equalsIgnoreCase("true") && !expr.getValue().equalsIgnoreCase("false")) {
-                ProcessorIssue pi = new ProcessorIssue();
-                pi.setProcessor(processor.getDescription());
-                pi.setAction(action.getDescription());
-                pi.setSeverity(Severity.Error);
-                pi.setDescription("Literal expression must have a boolean "
-                        + "(true/false) value when used as a predicate");
-
-                if (getIssues() == null) {
-                    setIssues(new ArrayList<Issue>());
-                }
-                getIssues().add(pi);
+                String message = "Literal expression must have a boolean (true/false) value when used as a predicate";
+                log.severe(processor.getDescription() + ":" + action.getDescription() + ":" + message);
+                ConfigMessage configMessage = new ConfigMessage();
+                configMessage.setSeverity(Severity.Error);
+                configMessage.setMessage(message);
+                configMessage.setProcessor(processor.getDescription());
+                configMessage.setAction(action.getDescription());
+                configMessages.add(configMessage);
             } else {
                 predicateResult = new Boolean(((LiteralExpression) getExpression()).getValue());
             }
         }
+
+        return configMessages;
     }
 
     @Override

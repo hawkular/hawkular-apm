@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ module APM {
   let apmTab = undefined;
   let trcTab = undefined;
   let btmTab = undefined;
+  let svcTab = undefined;
 
   _module.config(['$locationProvider', '$routeProvider', 'HawtioNavBuilderProvider',
     ($locationProvider, $routeProvider: ng.route.IRouteProvider, builder: HawtioMainNav.BuilderFactory) => {
@@ -40,6 +41,12 @@ module APM {
       .href(() => '/hawkular-ui/apm/tracing')
       .rank(20)
       .build();
+    svcTab = builder.create()
+      .id('services')
+      .title(() => 'Services')
+      .href(() => '/hawkular-ui/apm/services')
+      .rank(15)
+      .build();
     btmTab = builder.create()
       .id('btm')
       .title(() => 'Transactions')
@@ -49,6 +56,7 @@ module APM {
 
     builder.configureRouting($routeProvider, apmTab);
     builder.configureRouting($routeProvider, trcTab);
+    builder.configureRouting($routeProvider, svcTab);
     builder.configureRouting($routeProvider, btmTab);
     $locationProvider.html5Mode(true);
     $routeProvider.
@@ -59,6 +67,10 @@ module APM {
       when('/hawkular-ui/apm/tracing', {
         templateUrl: 'plugins/e2e/html/e2e.html',
         controller: 'E2E.E2EController'
+      }).
+      when('/hawkular-ui/apm/services', {
+        templateUrl: 'plugins/services/html/services.html',
+        controller: 'Services.ServicesController'
       }).
       when('/hawkular-ui/apm/btm', {
         templateUrl: 'plugins/btm/html/btm.html',
@@ -120,6 +132,7 @@ module APM {
   _module.run(['HawtioNav', (HawtioNav: HawtioMainNav.Registry) => {
     HawtioNav.add(apmTab);
     HawtioNav.add(trcTab);
+    HawtioNav.add(svcTab);
     HawtioNav.add(btmTab);
     log.debug('loaded');
   }]);

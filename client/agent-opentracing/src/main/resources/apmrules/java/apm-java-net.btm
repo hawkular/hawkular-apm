@@ -13,10 +13,27 @@ DO
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
-RULE java.net(2) Java HttpUrlConnection connect Producer Start getInputStream
+RULE java.net(2) Java HttpUrlConnection connect Producer Start getResponseCode
+CLASS java.net.HttpURLConnection
+METHOD getResponseCode()
+HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
+AT ENTRY
+# Need to filter out use of HttpURLConnection by APM, and also only use top level calls to the connection
+# as getStatusCode is also called internally
+IF !$0.connected && !hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
+DO
+  startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
+  		.withTag("http.uri", $0.getURL().getPath())
+  		.withTag("http.query", $0.getURL().getQuery()),
+  		getSpan(), String.valueOf($0.hashCode()));
+  getTracer().inject(getSpan().context(), textMapFormat(),
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
+ENDRULE
+
+RULE java.net(3) Java HttpUrlConnection connect Producer Start getInputStream
 CLASS ^java.net.HttpURLConnection
 METHOD getInputStream()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
@@ -29,10 +46,10 @@ DO
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
-RULE java.net(3) Java HttpUrlConnection connect Producer Start getOutputStream
+RULE java.net(4) Java HttpUrlConnection connect Producer Start getOutputStream
 CLASS ^java.net.HttpURLConnection
 METHOD getOutputStream()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
@@ -45,40 +62,38 @@ DO
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
-        new org.hawkular.apm.agent.opentracing.propagation.jav.HttpURLConnectionInjectAdapter($0));
+        new org.hawkular.apm.agent.opentracing.propagation.HttpURLConnectionInjectAdapter($0));
 ENDRULE
 
-RULE java.net(4) Java HttpUrlConnection getInputStream Producer End With Exception
+RULE java.net(5) Java HttpUrlConnection getInputStream Producer End With Exception
 CLASS ^java.net.HttpURLConnection
 METHOD getInputStream()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXCEPTION EXIT
-IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
+IF isCurrentSpan(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
-  getSpan().setTag("fault.code", String.valueOf($0.responseCode))
-    .setTag("fault", $0.responseMessage);
+  getSpan().setTag("http.status_code", String.valueOf($0.responseCode));
   finishSpan();
 ENDRULE
 
 
-RULE java.net(5) Java HttpUrlConnection getResponseCode Check For Fault
+RULE java.net(6) Java HttpUrlConnection getResponseCode Check For Fault
 CLASS ^java.net.HttpURLConnection
 METHOD getResponseCode()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
-IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
+IF isCurrentSpan(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 		&& $0.responseCode >= 400
 DO
-  getSpan().setTag("fault.code", String.valueOf($0.responseCode))
-    .setTag("fault", $0.responseMessage);
+  getSpan().setTag("http.status_code", String.valueOf($0.responseCode));
 ENDRULE
 
-RULE java.net(6) Java HttpUrlConnection getResponseCode End
+RULE java.net(7) Java HttpUrlConnection getResponseCode End
 CLASS ^java.net.HttpURLConnection
 METHOD getResponseCode()
 HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT EXIT
-IF hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
+IF isCurrentSpan(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   finishSpan();
 ENDRULE

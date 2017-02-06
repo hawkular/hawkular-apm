@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.model.config.Direction;
+import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Expression;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
-import org.hawkular.apm.api.model.trace.Issue;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.Trace;
 
@@ -38,8 +38,6 @@ public abstract class ExpressionHandler {
     private static final Logger log = Logger.getLogger(ExpressionHandler.class.getName());
 
     private Expression expression;
-
-    private List<Issue> issues;
 
     public ExpressionHandler(Expression expression) {
         this.setExpression(expression);
@@ -78,27 +76,13 @@ public abstract class ExpressionHandler {
     }
 
     /**
-     * @return the issues
-     */
-    public List<Issue> getIssues() {
-        return issues;
-    }
-
-    /**
-     * @param issues the issues to set
-     */
-    public void setIssues(List<Issue> issues) {
-        this.issues = issues;
-    }
-
-    /**
      * This method initialises the expression handler.
      *
      * @param processor The processor
      * @param action The action
      * @param predicate Whether the expression is a predicate
      */
-    public abstract void init(Processor processor, ProcessorAction action, boolean predicate);
+    public abstract List<ConfigMessage> init(Processor processor, ProcessorAction action, boolean predicate);
 
     /**
      * This method evaluates the supplied information against this

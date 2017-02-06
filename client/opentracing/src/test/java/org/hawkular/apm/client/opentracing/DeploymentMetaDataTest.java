@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,6 +41,7 @@ public class DeploymentMetaDataTest {
     @Before
     public void cleanupPossibleConflictingEnvVars() {
         System.getProperties().remove(PropertyUtil.HAWKULAR_APM_SERVICE_NAME);
+        System.getProperties().remove(PropertyUtil.HAWKULAR_APM_BUILDSTAMP);
         System.getProperties().remove(PropertyUtil.OPENSHIFT_BUILD_NAME);
         System.getProperties().remove(PropertyUtil.OPENSHIFT_BUILD_NAMESPACE);
         DeploymentMetaData.reloadServiceName();
@@ -125,6 +126,15 @@ public class DeploymentMetaDataTest {
         assertEquals("hawkular-apm", DeploymentMetaData.getServiceNameFromEnv());
         assertEquals("hawkular-apm-1", DeploymentMetaData.getBuildStampFromEnv());
         System.getProperties().remove(PropertyUtil.OPENSHIFT_BUILD_NAME);
+    }
+
+    @Test
+    public void retrieveBuildStamp_overrideOpenShiftProperty() {
+        System.setProperty(PropertyUtil.OPENSHIFT_BUILD_NAME, "hawkular-apm-1");
+        System.setProperty(PropertyUtil.HAWKULAR_APM_BUILDSTAMP, "hawkular-apm-2");
+        assertEquals("hawkular-apm-2", DeploymentMetaData.getBuildStampFromEnv());
+        System.getProperties().remove(PropertyUtil.OPENSHIFT_BUILD_NAME);
+        System.getProperties().remove(PropertyUtil.HAWKULAR_APM_BUILDSTAMP);
     }
 
     @Test

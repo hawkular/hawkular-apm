@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,12 @@ import org.hawkular.apm.api.logging.Logger;
 import org.hawkular.apm.api.logging.Logger.Level;
 import org.hawkular.apm.api.model.analytics.Cardinality;
 import org.hawkular.apm.api.model.analytics.CommunicationSummaryStatistics;
-import org.hawkular.apm.api.model.analytics.CompletionTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.EndpointInfo;
 import org.hawkular.apm.api.model.analytics.NodeSummaryStatistics;
 import org.hawkular.apm.api.model.analytics.NodeTimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.Percentiles;
 import org.hawkular.apm.api.model.analytics.PropertyInfo;
+import org.hawkular.apm.api.model.analytics.TimeseriesStatistics;
 import org.hawkular.apm.api.model.analytics.TransactionInfo;
 import org.hawkular.apm.api.model.events.CommunicationDetails;
 import org.hawkular.apm.api.model.events.CompletionTime;
@@ -63,8 +63,8 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
             new TypeReference<Long>() {
             };
 
-    private static final TypeReference<java.util.List<CompletionTimeseriesStatistics>> COMPLETION_STATISTICS_LIST =
-            new TypeReference<java.util.List<CompletionTimeseriesStatistics>>() {
+    private static final TypeReference<java.util.List<TimeseriesStatistics>> TIMESERIES_STATISTICS_LIST =
+            new TypeReference<java.util.List<TimeseriesStatistics>>() {
             };
 
     private static final TypeReference<java.util.List<NodeTimeseriesStatistics>> NODE_TIMESERIES_STATISTICS_LIST =
@@ -194,7 +194,7 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
     }
 
     @Override
-    public List<CompletionTimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
+    public List<TimeseriesStatistics> getTraceCompletionTimeseriesStatistics(String tenantId,
                                                                                        Criteria criteria,
                                                                                        long interval) {
         if (log.isLoggable(Level.FINEST)) {
@@ -203,7 +203,7 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
         }
 
         String path = "analytics/trace/completion/statistics?criteria=%s&interval=%d";
-        return getResultsForUrl(tenantId, COMPLETION_STATISTICS_LIST, path, criteria, interval);
+        return getResultsForUrl(tenantId, TIMESERIES_STATISTICS_LIST, path, criteria, interval);
     }
 
     @Override
@@ -290,6 +290,19 @@ public class AnalyticsServiceRESTClient extends AbstractRESTClient implements An
     @Override
     public void storeTraceCompletions(String tenantId, List<CompletionTime> completionTimes) throws StoreException {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<TimeseriesStatistics> getEndpointResponseTimeseriesStatistics(String tenantId,
+                                                                                       Criteria criteria,
+                                                                                       long interval) {
+        if (log.isLoggable(Level.FINEST)) {
+            log.finest("Get endpoint response statistics: tenantId=[" + tenantId + "] criteria="
+                    + criteria + " interval=" + interval);
+        }
+
+        String path = "analytics/endpoint/response/statistics?criteria=%s&interval=%d";
+        return getResultsForUrl(tenantId, TIMESERIES_STATISTICS_LIST, path, criteria, interval);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,7 @@ import org.hawkular.apm.api.model.trace.CorrelationIdentifier;
 import org.hawkular.apm.api.model.trace.Node;
 import org.hawkular.apm.api.model.trace.NodeType;
 import org.hawkular.apm.api.model.trace.Producer;
+import org.hawkular.apm.api.utils.NodeUtil;
 
 /**
  * This class is responsible for building up the information related to a particular node
@@ -221,6 +222,9 @@ public class NodeBuilder {
         for (int i = 0; i < nodes.size(); i++) {
             ret.getNodes().add(nodes.get(i).build());
         }
+
+        // Check if template has been supplied for URI
+        NodeUtil.rewriteURI(ret);
 
         return ret;
     }

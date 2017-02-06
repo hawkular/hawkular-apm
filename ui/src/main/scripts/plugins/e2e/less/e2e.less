@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-@import "../../../libs/patternfly/less/lib/bootstrap/variables.less";
-@import "../../../libs/patternfly/less/lib/bootstrap/mixins.less";
-@import "../../../libs/patternfly/less/variables.less";
+@import "../../../libs/bootstrap/less/variables.less";
+@import "../../../libs/bootstrap/less/mixins.less";
+@import "../../../libs/patternfly/dist/less/variables.less";
 
 
 // Variables
@@ -78,6 +78,17 @@ th {
 
         .dt {
             height: calc(~"100vh - 220px");
+        }
+    }
+
+    @media (max-width: @screen-xs-max) {
+        position: static;
+        top: auto;
+        width: inherit;
+        margin-top: 0;
+
+        .card-pf-body {
+            position: static;
         }
     }
 }
@@ -146,6 +157,12 @@ th {
         font-size: 11px;
         margin-top: 5px;
         color: #d6d6d6;
+    }
+    .fault-indicator {
+        margin-top: 6px;
+        i {
+            color: #fafafa;
+        }
     }
     // .node g div {
     //     width: 200px;
@@ -224,6 +241,9 @@ th {
     .entity.consumer {
         .duration {
             margin-left: 0.5em;
+        }
+        .fault-indicator {
+            width: 4%;
         }
     }
     .entity.severity0 {

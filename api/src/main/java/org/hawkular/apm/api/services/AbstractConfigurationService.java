@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,6 @@ import org.hawkular.apm.api.model.config.txn.ConfigMessage;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.ProcessorAction;
 import org.hawkular.apm.api.model.config.txn.TransactionConfig;
-import org.hawkular.apm.api.model.trace.Issue;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 
 /**
  * This class provides the abstract base class for the Configuration Service.
@@ -52,27 +50,11 @@ public abstract class AbstractConfigurationService implements ConfigurationServi
         }
 
         for (Processor processor : config.getProcessors()) {
-
             for (ProcessorAction action : processor.getActions()) {
-
                 ProcessorActionHandler handler = ProcessorActionHandlerFactory.getHandler(action);
 
                 if (handler != null) {
-                    handler.init(processor);
-
-                    if (handler.getIssues() != null) {
-                        for (Issue issue : handler.getIssues()) {
-                            ConfigMessage cm = new ConfigMessage();
-                            cm.setMessage(issue.getDescription());
-                            if (issue instanceof ProcessorIssue) {
-                                cm.setProcessor(((ProcessorIssue)issue).getProcessor());
-                                cm.setAction(((ProcessorIssue)issue).getAction());
-                                cm.setField(((ProcessorIssue)issue).getField());
-                            }
-                            cm.setSeverity(issue.getSeverity());
-                            messages.add(cm);
-                        }
-                    }
+                    messages.addAll(handler.init(processor));
                 }
             }
         }

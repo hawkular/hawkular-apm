@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,6 +52,8 @@ import org.hawkular.apm.tests.common.Wait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import io.opentracing.tag.Tags;
 
 /**
  * @author gbrown
@@ -242,11 +244,8 @@ public class JavaxServletSyncServerITest extends ClientTestBase {
 
         assertEquals(method, testConsumer.getOperation());
 
-        if (fault) {
-            assertEquals("Unauthorized", testConsumer.getProperties(Constants.PROP_FAULT).iterator().next().getValue());
-            assertEquals("401",
-                    testConsumer.getProperties(Constants.PROP_FAULT_CODE).iterator().next().getValue());
-        }
+        assertEquals(fault ? "401" : "200",
+                    testConsumer.getProperties(Tags.HTTP_STATUS.getKey()).iterator().next().getValue());
     }
 
     public static class EmbeddedServlet extends HttpServlet {

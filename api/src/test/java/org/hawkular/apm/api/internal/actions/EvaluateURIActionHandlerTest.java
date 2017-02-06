@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,6 @@ package org.hawkular.apm.api.internal.actions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.hawkular.apm.api.model.Constants;
@@ -47,8 +45,6 @@ public class EvaluateURIActionHandlerTest {
         consumer.setUri("/not/same");
 
         assertFalse(handler.process(null, consumer, Direction.In, null, null));
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -61,8 +57,6 @@ public class EvaluateURIActionHandlerTest {
         consumer.setUri("/same/fred/elementsbutdiffvalues");
 
         assertFalse(handler.process(null, consumer, Direction.In, null, null));
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -84,8 +78,6 @@ public class EvaluateURIActionHandlerTest {
         assertTrue(consumer.hasProperty("num"));
         assertEquals("fred", consumer.getProperties("name").iterator().next().getValue());
         assertEquals("5", consumer.getProperties("num").iterator().next().getValue());
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -111,8 +103,6 @@ public class EvaluateURIActionHandlerTest {
         assertEquals("5", consumer.getProperties("num").iterator().next().getValue());
 
         assertFalse(trace.hasProperty("another"));
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -141,8 +131,6 @@ public class EvaluateURIActionHandlerTest {
         assertEquals("5", consumer.getProperties("num").iterator().next().getValue());
 
         assertFalse(trace.hasProperty("another"));
-
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -152,7 +140,5 @@ public class EvaluateURIActionHandlerTest {
         EvaluateURIActionHandler handler = new EvaluateURIActionHandler(action);
 
         handler.init(new Processor());
-
-        assertNotNull(handler.getIssues());
     }
 }

@@ -1,5 +1,5 @@
 ///
-/// Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+/// Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 /// and other contributors as indicated by the @author tags.
 ///
 /// Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,6 +97,10 @@ module BTM {
 
     $scope.getFaultsChart = function(theChart) {
       $scope.faultsChart = theChart;
+    };
+
+    $scope.getCompTimeChart = function(theChart) {
+      $scope.compTimeChart = theChart;
     };
 
     let chartOnClick = function(name, value) {
@@ -301,6 +305,21 @@ module BTM {
     };
 
     $rootScope.$watch('sbFilter.criteria', $scope.reloadData, true);
+
+    // watch for sidebar changes, to redraw the charts
+    $scope.$watch('hideSidebar', function() {
+      $timeout(function() {
+        if ($scope.compTimeChart) {
+          $scope.compTimeChart.flush();
+        }
+        if ($scope.propsChart) {
+          $scope.propsChart.flush();
+        }
+        if ($scope.faultsChart) {
+          $scope.faultsChart.flush();
+        }
+      });
+    });
 
   }]);
 }

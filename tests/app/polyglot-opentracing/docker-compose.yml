@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,12 @@
 # limitations under the License.
 #
 
-FROM openjdk:8-jdk
+version: "2"
 
-MAINTAINER Pavol Loffay <ploffay@redhat.com>
-
-ENV APP_HOME /app/
-
-COPY hawkular-apm-tests-app-polyglot-opentracing-swarm.jar $APP_HOME
-
-WORKDIR $APP_HOME
-
-EXPOSE 3000
-
-CMD ["java", "-jar", "hawkular-apm-tests-app-polyglot-opentracing-swarm.jar", "-Dswarm.http.port=3000"]
+services:
+  wildfly-swarm:
+    build: java
+  nodejs:
+    build: js
+    ports:
+     - "3001:3001"

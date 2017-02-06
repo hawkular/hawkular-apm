@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +18,12 @@ package org.hawkular.apm.api.internal.actions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.hawkular.apm.api.model.config.Direction;
 import org.hawkular.apm.api.model.config.txn.LiteralExpression;
 import org.hawkular.apm.api.model.config.txn.Processor;
 import org.hawkular.apm.api.model.config.txn.SetPropertyAction;
-import org.hawkular.apm.api.model.trace.ProcessorIssue;
 import org.junit.Test;
 
 /**
@@ -42,7 +40,6 @@ public class LiteralExpressionHandlerTest {
         handler.init(null, null, true);
 
         assertTrue(handler.test(null, null, Direction.In, null, null));
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -54,7 +51,6 @@ public class LiteralExpressionHandlerTest {
         handler.init(null, null, true);
 
         assertFalse(handler.test(null, null, Direction.In, null, null));
-        assertNull(handler.getIssues());
     }
 
     @Test
@@ -72,10 +68,6 @@ public class LiteralExpressionHandlerTest {
         handler.init(processor, action, true);
 
         assertFalse(handler.test(null, null, Direction.In, null, null));
-
-        assertEquals(1, handler.getIssues().size());
-        assertEquals(processor.getDescription(), ((ProcessorIssue) handler.getIssues().get(0)).getProcessor());
-        assertEquals(action.getDescription(), ((ProcessorIssue) handler.getIssues().get(0)).getAction());
     }
 
     @Test
@@ -87,7 +79,6 @@ public class LiteralExpressionHandlerTest {
         handler.init(null, null, false);
 
         assertEquals(literal.getValue(), handler.evaluate(null, null, Direction.In, null, null));
-        assertNull(handler.getIssues());
     }
 
 }

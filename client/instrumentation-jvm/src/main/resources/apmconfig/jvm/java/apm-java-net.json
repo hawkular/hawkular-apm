@@ -80,10 +80,6 @@
         },{
           "type": "SetProperty",
           "name": "fault",
-          "valueExpression": "simpleClassName($^)"
-        },{
-          "type": "SetProperty",
-          "name": "fault.description",
           "valueExpression": "$^.getMessage()"
         },{
           "type": "InstrumentProducer",
@@ -265,12 +261,8 @@
         "condition": "isActive() && $! >= 400",
         "actions": [{
           "type": "SetProperty",
-          "name": "fault.code",
+          "name": "http.status_code",
           "valueExpression": "$!"
-        },{
-          "type": "SetProperty",
-          "name": "fault",
-          "valueExpression": "$0.responseMessage"
         },{
           "type": "InstrumentProducer",
           "direction": "Out",

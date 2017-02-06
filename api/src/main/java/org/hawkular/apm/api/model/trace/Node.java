@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,9 +72,6 @@ public abstract class Node {
 
     @JsonInclude(Include.NON_EMPTY)
     private List<CorrelationIdentifier> correlationIds = new ArrayList<CorrelationIdentifier>();
-
-    @JsonInclude(Include.NON_EMPTY)
-    private List<Issue> issues = new ArrayList<Issue>();
 
     public Node(NodeType type) {
         this.type = type;
@@ -311,20 +308,6 @@ public abstract class Node {
     }
 
     /**
-     * @return the issues
-     */
-    public List<Issue> getIssues() {
-        return issues;
-    }
-
-    /**
-     * @param issues the issues to set
-     */
-    public void setIssues(List<Issue> issues) {
-        this.issues = issues;
-    }
-
-    /**
      * This method calculates the end time of this node based on the
      * base time and duration.
      *
@@ -403,7 +386,6 @@ public abstract class Node {
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((correlationIds == null) ? 0 : correlationIds.hashCode());
         result = prime * result + (int) (duration ^ (duration >>> 32));
-        result = prime * result + ((issues == null) ? 0 : issues.hashCode());
         result = prime * result + ((operation == null) ? 0 : operation.hashCode());
         result = prime * result + ((properties == null) ? 0 : properties.hashCode());
         result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -428,11 +410,6 @@ public abstract class Node {
         } else if (!correlationIds.equals(other.correlationIds))
             return false;
         if (duration != other.duration)
-            return false;
-        if (issues == null) {
-            if (other.issues != null)
-                return false;
-        } else if (!issues.equals(other.issues))
             return false;
         if (operation == null) {
             if (other.operation != null)
