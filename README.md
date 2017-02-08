@@ -96,7 +96,7 @@ License
 Hawkular-APM is released under Apache License, Version 2.0 as described in the [LICENSE](LICENSE) document
 
 ```
-   Copyright 2015-2016 Red Hat, Inc.
+   Copyright 2015-2017 Red Hat, Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
