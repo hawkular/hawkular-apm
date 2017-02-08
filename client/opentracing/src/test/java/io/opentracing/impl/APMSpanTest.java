@@ -27,6 +27,8 @@ import java.util.Map;
 
 import org.hawkular.apm.api.model.Constants;
 import org.hawkular.apm.client.opentracing.APMTracer;
+import org.hawkular.apm.client.opentracing.APMTracerTest;
+import org.hawkular.apm.client.opentracing.refactor.HawkularTracer;
 import org.junit.Test;
 
 import io.opentracing.References;
@@ -62,8 +64,28 @@ public class APMSpanTest {
     }
 
     @Test
+    public void testA() {
+        APMTracerTest.TestTraceRecorder recorder = new APMTracerTest.TestTraceRecorder();
+        Tracer tracer = new APMTracer(recorder);
+
+        SpanContext rr = extractSpanContext(tracer, "rr");
+
+        Span span = tracer.buildSpan("test")
+                .asChildOf(rr)
+                .start();
+
+        Span span2 = tracer.buildSpan("test")
+                .asChildOf(rr)
+                .start();
+
+        span.finish();
+        span2.finish();
+    }
+
+
+    @Test
     public void testFindPrimaryReferenceMultipleChildOfSpan() {
-        Tracer tracer = new APMTracer();
+        Tracer tracer = new HawkularTracer();
         Span span1 = tracer.buildSpan("test1").start();
         Reference ref1 = new Reference(References.CHILD_OF, span1.context());
         Span span2 = tracer.buildSpan("test2").start();
