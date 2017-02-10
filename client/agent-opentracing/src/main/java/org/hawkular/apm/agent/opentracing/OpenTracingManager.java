@@ -38,6 +38,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.Tracer.SpanBuilder;
+import io.opentracing.contrib.global.GlobalTracer;
 import io.opentracing.propagation.Format;
 import io.opentracing.propagation.TextMap;
 
@@ -50,7 +51,7 @@ public class OpenTracingManager extends Helper {
 
     private static final Logger log = Logger.getLogger(OpenTracingManager.class.getName());
 
-    private Tracer tracer = OpenTracingTracer.getSingleton();
+    private Tracer tracer = GlobalTracer.get();
 
     private static final ThreadLocal<TraceState> traceState = new ThreadLocal<>();
 
