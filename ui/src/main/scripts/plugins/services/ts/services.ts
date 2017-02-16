@@ -90,6 +90,23 @@ module Services {
         console.log('Failed to get statistics: ' + angular.toJson(resp));
       };
 
+      /**
+       * Fills arr[idxTS2] with timestamps and arr[idxTS2+1] with <value>
+       * from the timestamps present in arr[idxTS1] that aren't present in arr[idxTS2]
+       */
+      let fillGapsWithValue = function(arr, idxTS1, idxTS2, value) {
+        let diff = _.difference(arr[idxTS1], arr[idxTS2]);
+        _.each(diff, (ts: any) => {
+          if(!isNaN(ts)) {
+            let pos = _.sortedIndex(arr[idxTS2], ts);
+            if (pos !== 0 && pos < arr[idxTS2].length) {
+              arr[idxTS2].splice(pos, 0, ts);
+              arr[idxTS2 + 1].splice(pos, 0, value);
+            }
+          }
+        });
+      };
+
       let promises = [];
       _.forEach($scope.selectedServices, (ss) => {
         let serviceCriteria = angular.copy(txnCriteria);
@@ -110,13 +127,23 @@ module Services {
         let tmpTxFaultData = [];
 
         _.forEach(data, (d) => {
-          tmpStatistics.push(d[0]);
-          tmpStatistics.push(d[1]);
+          tmpStatistics.push(angular.copy(d[0]));
+          tmpStatistics.push(angular.copy(d[1]));
 
-          tmpTxFaultData.push(d[0]);
-          tmpTxFaultData.push(d[2]);
-          tmpTxFaultData.push(d[3]);
+          tmpTxFaultData.push(angular.copy(d[0]));
+          tmpTxFaultData.push(angular.copy(d[2]));
+          tmpTxFaultData.push(angular.copy(d[3]));
         });
+
+        if (tmpStatistics.length > 2) {
+          for(let i = 0; i < tmpStatistics.length; i += 2) {
+            for(let j = i + 2; j < tmpStatistics.length; j += 2) {
+              fillGapsWithValue(tmpStatistics, i, j, null);
+              fillGapsWithValue(tmpStatistics, j, i, null);
+            }
+          }
+        }
+
         $scope.statistics = tmpStatistics;
         $scope.tfData = tmpTxFaultData;
         $scope.redrawCompRTChart();
@@ -126,6 +153,9 @@ module Services {
 
     $scope.statistics = [];
     $scope.rtChartConfig = {
+      padding: {
+        left: 50,
+      },
       data: {
         columns: [],
         type: 'area',
@@ -155,6 +185,9 @@ module Services {
     };
 
     $scope.tfChartConfig = {
+      padding: {
+        left: 50,
+      },
       data: {
         columns: [],
         type: 'bar',
