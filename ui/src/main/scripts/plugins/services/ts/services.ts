@@ -153,6 +153,9 @@ module Services {
 
     $scope.statistics = [];
     $scope.rtChartConfig = {
+      padding: {
+        left: 50,
+      },
       data: {
         columns: [],
         type: 'area',
@@ -182,6 +185,9 @@ module Services {
     };
 
     $scope.tfChartConfig = {
+      padding: {
+        left: 50,
+      },
       data: {
         columns: [],
         type: 'bar',
