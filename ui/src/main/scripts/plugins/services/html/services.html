@@ -18,7 +18,7 @@
             <label class="control-label col-md-3" for="rootnode">Version</label>
             <div class="col-md-9">
               <select pf-select="{noneSelectedText: 'No Versions Available' }" class="form-control" id="buildstamp-select"
-                ng-options="buildStamp.value for buildStamp in buildStamps" ng-model="buildStamp">
+                ng-options="(buildStamp.label || buildStamp.value) for buildStamp in buildStamps" ng-model="buildStamp">
                 <option value="">All Versions</option>
               </select>
             </div>
@@ -31,7 +31,7 @@
       <form class="form-horizontal form-inline row" style="margin-top: 15px;">
         <div class="col-md-12">
           <span class="label label-default" ng-repeat="(index, selService) in selectedServices" style="margin-right: 10px;">
-            {{selService.service.name}} : {{selService.buildStamp.value || "All"}}
+            {{selService.service.name}} : {{selService.buildStamp.label || selService.buildStamp.value || "All"}}
             <a href="#" ng-click="remService(index)"><span class="pficon pficon-close" style="vertical-align: bottom; color: #fff; font-size: 1.2em; margin-left: 5px;"></span></a>
           </span>
         </div>
