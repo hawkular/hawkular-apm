@@ -24,7 +24,7 @@ module Services {
     '$q', '$interval', '$timeout', ($scope, $rootScope, $http, $q, $interval, $timeout) => {
 
     // just used internally for identifying the special version
-    const ANY_SERVICE_VERSION = '***ANY***';
+    const ALL_IND_VERSION = '***ALL_IND***';
 
     $scope.services = [];
     $scope.buildStamps = [];
@@ -34,8 +34,8 @@ module Services {
         $scope.buildStamp = undefined;
         $scope.buildStamps = _.find($scope.services, 'name', $scope.service.name)['buildStamps'];
       }
-      if ($scope.buildStamps.length > 1) {
-        $scope.buildStamps.unshift({'label': 'Any', 'value': ANY_SERVICE_VERSION});
+      if ($scope.buildStamps.length > 0) {
+        $scope.buildStamps.unshift({'name': 'All (Individually)', 'label': 'All (Ind)' , 'value': ALL_IND_VERSION});
       }
     };
 
@@ -123,9 +123,9 @@ module Services {
       _.forEach($scope.selectedServices, (ss) => {
         let serviceCriteria = angular.copy(txnCriteria);
         serviceCriteria.properties = [{name: 'service', value: ss.service.name, operator: 'HAS'}];
-        let buildStamp = 'All';
+        let buildStamp = 'All (Agg)';
         if (ss.buildStamp && ss.buildStamp.value) {
-          if (ss.buildStamp.value === ANY_SERVICE_VERSION) {
+          if (ss.buildStamp.value === ALL_IND_VERSION) {
             _.forEach(_.find($scope.services, 'name', ss.service.name)['buildStamps'], (bs) => {
               let newServiceCriteria = angular.copy(serviceCriteria);
               newServiceCriteria.properties.push({name: 'buildStamp', value: bs.value});
@@ -137,7 +137,7 @@ module Services {
             buildStamp = ss.buildStamp.value;
           }
         }
-        if (!ss.buildStamp || ss.buildStamp.value !== ANY_SERVICE_VERSION) {
+        if (!ss.buildStamp || ss.buildStamp.value !== ALL_IND_VERSION) {
           promises.push(makeServiceDataRequest(serviceCriteria, ss.service.name, buildStamp));
         }
       });
