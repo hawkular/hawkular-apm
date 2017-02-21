@@ -198,7 +198,7 @@
                     <argument>org.jboss.as.domain-add-user</argument>
                     <argument>-a</argument>
                     <argument>--user</argument>
-                    <argument>jdoe</argument>
+                    <argument>admin</argument>
                     <argument>--password</argument>
                     <argument>password</argument>
                     <argument>--group</argument>

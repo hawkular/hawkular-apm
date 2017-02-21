@@ -99,7 +99,7 @@ public class NodeDetailsDeriverTest {
         Trace trace = new Trace();
 
         Property p1 = new Property(Constants.PROP_BUILD_STAMP, "myBuild");
-        Property p2 = new Property(Constants.PROP_PRINCIPAL, "jdoe");
+        Property p2 = new Property(Constants.PROP_PRINCIPAL, "admin");
         Property p3 = new Property(Constants.PROP_SERVICE_NAME, "myService");
         Property p4 = new Property("LocalProp", "LocalValue");
 

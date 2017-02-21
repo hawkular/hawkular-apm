@@ -46,7 +46,7 @@ import zipkin.Span;
  */
 public abstract class AbstractITest {
 
-    public static final String HAWKULAR_APM_USERNAME = "jdoe";
+    public static final String HAWKULAR_APM_USERNAME = "admin";
     public static final String HAWKULAR_APM_PASSWORD = "password";
     public static final String HAWKULAR_APM_URI = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
     public static final String HAWKULAR_TENANT_HEADER = "Hawkular-Tenant";

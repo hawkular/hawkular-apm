@@ -59,12 +59,12 @@ $ curl -ivX GET 'http://localhost:3002/roda/hello'
 $ curl -ivX GET 'http://localhost:3004/pyramid/hello'
 -> hello calls
 
-$ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3001/nodejs/createUser' -d '{"name": "jdoe"}'
+$ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3001/nodejs/createUser' -d '{"name": "admin"}'
 -> multi service call for user creation
-$ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3000/dropwizard/users' -d '{"name": "jdoe"}'
+$ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3000/dropwizard/users' -d '{"name": "admin"}'
 $ curl -ivX GET 'http://localhost:3000/dropwizard/users'
 -> create and get users in dropwizard (using MySQL)
-$ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3003/wildfly-swarm/users' -d '{"name": "jdoe"}'
+$ curl -ivX POST -H 'Content-Type: application/json' 'http://localhost:3003/wildfly-swarm/users' -d '{"name": "admin"}'
 $ curl -ivX GET 'http://localhost:3003/wildfly-swarm/users'
 -> create and get users in wildfly-swarm (using Cassandra)
 $ curl -ivX GET 'http://localhost:3000/dropwizard/asyncTwoOutgoingCalls'

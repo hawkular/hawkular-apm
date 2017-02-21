@@ -39,7 +39,7 @@ import io.opentracing.tag.Tags;
  */
 public class JavaxServletTestBase extends OpenTracingAgentTestBase {
 
-    private static final String TEST_USER = "jdoe";
+    private static final String TEST_USER = "admin";
     private static final String TEST_HEADER = "test-header";
     private static final String HELLO_WORLD_RESPONSE = "<h1>HELLO WORLD</h1>";
 

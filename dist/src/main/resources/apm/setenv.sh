@@ -52,7 +52,7 @@ fi
 
 # REST environment variables
 export HAWKULAR_APM_URI=http://localhost:$APM_PORT
-export HAWKULAR_APM_USERNAME=jdoe
+export HAWKULAR_APM_USERNAME=admin
 export HAWKULAR_APM_PASSWORD=password
 
 # General environment variables
