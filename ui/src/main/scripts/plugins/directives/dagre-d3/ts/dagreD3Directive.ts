@@ -67,8 +67,7 @@ module DagreD3 {
         nodeTooltip += ' / ' + (d.minimumDuration / 1000) + ' / ' + (d.maximumDuration / 1000);
         let tooltipId = d.id.replace(/\W+/g, '_');
         scope[tooltipId] = $sce.trustAsHtml(nodeTooltip);
-        let html = '<div' + (d.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip"' +
-          'tooltip-html="' + tooltipId + '" ') : '') + '>';
+        let html = '<div>';
         html += '<span class="status"></span>';
         html += '<span class="name service-name">' + (d.serviceName || '&nbsp;') + '</span>';
         html += '<span class="name">' + d.id + '</span>';
@@ -84,7 +83,7 @@ module DagreD3 {
           rx: 5,
           ry: 5,
           padding: 0,
-          class: 'severity-' + d.severity + (d.count ? '' : ' empty-node')
+          class: 'severity-' + d.severity + (d.count ? ' show-tt' : ' empty-node')
         });
         if (!angular.equals({}, d.outbound)) {
           _.each(Object.keys(d.outbound), (nd: any) => {
@@ -96,9 +95,7 @@ module DagreD3 {
             linkTooltip += ' / ' + (edge.minimumLatency / 1000) + ' / ' + (edge.maximumLatency / 1000);
             let tooltipId = d.id.replace(/\W+/g, '_') + '___' + edge.node.id.replace(/\W+/g, '_');
             scope[tooltipId] = $sce.trustAsHtml(linkTooltip);
-            let linkHtml = '<span' + (edge.count ? (' tooltip-append-to-body="true" tooltip-class="graph-tooltip" ' +
-              'tooltip-placement="bottom" tooltip-html="' + tooltipId + '"') : '') +
-              '>' + edge.count + '</span>';
+            let linkHtml = '<span>' + edge.count + '</span>';
             g.setEdge(d.id, nd, {
               labelType: 'html',
               label: edge.count ? linkHtml : '',
@@ -144,7 +141,25 @@ module DagreD3 {
         inner.attr('transform', '');
 
         let res = inner.call(render, g);
-        $compile(res[0])(scope);
+
+        // add the tooltips aftewards, so they go on the <g> element
+        inner.selectAll('g.node.show-tt').on('mouseenter', null).attr('tooltip-append-to-body', 'true')
+                                  .attr('tooltip-class', 'graph-tooltip')
+                                  .attr('tooltip-html', (d) => {
+                                    let tooltipId = d.replace(/\W+/g, '_');
+                                    return tooltipId;
+                                  });
+
+        inner.selectAll('g.edgeLabel').attr('tooltip-append-to-body', 'true')
+                                      .attr('tooltip-class', 'graph-tooltip')
+                                      .attr('tooltip-html', (d) => {
+                                        let tooltipId = d.v.replace(/\W+/g, '_') + '___' + d.w.replace(/\W+/g, '_');
+                                        return tooltipId;
+                                      });
+
+        if (!isUpdate) {
+          $compile(res[0])(scope);
+        }
 
         inner.attr('transform', curTransform);
 
