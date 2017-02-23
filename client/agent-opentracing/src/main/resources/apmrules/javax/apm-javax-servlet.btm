@@ -11,7 +11,8 @@ BIND req : javax.servlet.http.HttpServletRequest = $1;
 IF includePath(uri.getPath())
 DO
   startSpanWithContext(getTracer().buildSpan(req.getMethod())
-    .withTag("http.uri", uri.getPath())
+    .withTag("span.kind", "server")
+    .withTag("http.url", req.getRequestURL().toString())
     .withTag("http.query", req.getQueryString())
     .withTag("principal", req.getRemoteUser()),
     spanCtx);

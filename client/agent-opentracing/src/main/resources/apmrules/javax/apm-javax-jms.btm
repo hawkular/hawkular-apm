@@ -9,7 +9,9 @@ BIND spanCtx:SpanContext = getTracer().extract(textMapFormat(),
   		new org.hawkular.apm.agent.opentracing.propagation.JMSMessageExtractAdapter($1));
 IF !isInstanceOf($1.getJMSDestination(),javax.jms.TemporaryQueue.class)
 DO
-  startSpanWithContext(getTracer().buildSpan("send").withTag("mom.url",$1.getJMSDestination().toString()),
+  startSpanWithContext(getTracer().buildSpan("send")
+    .withTag("span.kind","server")
+    .withTag("mom.url",$1.getJMSDestination().toString()),
     spanCtx);
 ENDRULE
 
@@ -30,7 +32,9 @@ HELPER org.hawkular.apm.agent.opentracing.OpenTracingManager
 AT ENTRY
 IF !isInstanceOf($1,javax.jms.TemporaryQueue.class)
 DO
-  startSpanWithParent(getTracer().buildSpan("send").withTag("mom.url",$1.toString()),
+  startSpanWithParent(getTracer().buildSpan("send")
+    .withTag("span.kind","client")
+    .withTag("mom.url",$1.toString()),
   		getSpan());
   getTracer().inject(getSpan().context(), textMapFormat(),
         new org.hawkular.apm.agent.opentracing.propagation.JMSMessageInjectAdapter($2));

@@ -17,21 +17,19 @@
 package org.hawkular.apm.tests.agent.opentracing.custom;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
-import java.util.Set;
+import java.util.List;
 
-import org.hawkular.apm.api.model.Property;
-import org.hawkular.apm.api.model.trace.Component;
-import org.hawkular.apm.api.model.trace.Trace;
-import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.agent.opentracing.common.OpenTracingAgentTestBase;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
+
+import io.opentracing.mock.MockSpan;
 
 /**
  * @author gbrown
  */
-public class CustomRuleITest extends ClientTestBase {
+public class CustomRuleITest extends OpenTracingAgentTestBase {
 
     private static final String HELLO_WORLD = "Hello World";
 
@@ -40,21 +38,12 @@ public class CustomRuleITest extends ClientTestBase {
         CustomComponent cc = new CustomComponent();
         cc.exampleCall(HELLO_WORLD);
 
-        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
+        Wait.until(() -> getTracer().finishedSpans().size() == 1);
 
-        Trace trace=getApmMockServer().getTraces().get(0);
-
-        // Check contains single component
-        assertEquals(1, trace.getNodes().size());
-        assertEquals(Component.class, trace.getNodes().get(0).getClass());
-
-        Component component = (Component)trace.getNodes().get(0);
-        assertEquals("exampleCall", component.getOperation());
-
-        Set<Property> props = component.getProperties("message");
-        assertNotNull(props);
-        assertEquals(1, props.size());
-        assertEquals(HELLO_WORLD, props.iterator().next().getValue());
+        List<MockSpan> spans = getTracer().finishedSpans();
+        assertEquals(1, spans.size());
+        assertEquals("exampleCall", spans.get(0).operationName());
+        assertEquals(HELLO_WORLD, spans.get(0).tags().get("message"));
     }
 
 }

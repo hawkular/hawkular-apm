@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.AsyncContext;
@@ -37,21 +36,19 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.hawkular.apm.api.model.Constants;
-import org.hawkular.apm.api.model.trace.Consumer;
-import org.hawkular.apm.api.utils.NodeUtil;
-import org.hawkular.apm.tests.common.ClientTestBase;
+import org.hawkular.apm.tests.agent.opentracing.common.OpenTracingAgentTestBase;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 
 /**
  * @author gbrown
  */
-public class JavaxServletAsyncServerITest extends ClientTestBase {
+public class JavaxServletAsyncServerITest extends OpenTracingAgentTestBase {
 
     private static final String GREETINGS_REQUEST = "Greetings";
     private static final String TEST_HEADER = "test-header";
@@ -122,10 +119,7 @@ public class JavaxServletAsyncServerITest extends ClientTestBase {
 
     protected void testJettyServlet(String method, String urlstr, String reqdata, boolean fault,
             boolean respexpected) throws IOException {
-        String path = null;
-
         URL url = new URL(urlstr);
-        path = url.getPath();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
         connection.setRequestMethod(method);
@@ -185,29 +179,17 @@ public class JavaxServletAsyncServerITest extends ClientTestBase {
             assertEquals("Unexpected fault response code", 401, connection.getResponseCode());
         }
 
-        Wait.until(() -> getApmMockServer().getTraces().size() == 2);
+        Wait.until(() -> getTracer().finishedSpans().size() == 2);
 
-        assertEquals(2, getApmMockServer().getTraces().size());
+        List<MockSpan> spans = getTracer().finishedSpans();
+        assertEquals(2, spans.size());
 
-        List<Consumer> consumers = new ArrayList<Consumer>();
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Consumer.class, consumers);
-        NodeUtil.findNodes(getApmMockServer().getTraces().get(1).getNodes(), Consumer.class, consumers);
-
-        assertEquals("Expecting 1 consumers", 1, consumers.size());
-
-        Consumer testConsumer = consumers.get(0);
-
-        assertEquals(path, testConsumer.getUri());
-
-        if (urlstr.endsWith(QUERY_STRING)) {
-            assertEquals(QUERY_STRING,
-                    testConsumer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
-        }
-
-        assertEquals(method, testConsumer.getOperation());
-
-        assertEquals(fault ? "401" : "200",
-                    testConsumer.getProperties(Tags.HTTP_STATUS.getKey()).iterator().next().getValue());
+        MockSpan serverSpan=spans.stream()
+                .filter(s -> s.tags().get(Tags.SPAN_KIND.getKey()).equals(Tags.SPAN_KIND_SERVER))
+                .findFirst().get();
+        assertEquals(method, serverSpan.operationName());
+        assertEquals(toHttpURL(url), serverSpan.tags().get(Tags.HTTP_URL.getKey()));
+        assertEquals(fault ? "401" : "200", serverSpan.tags().get(Tags.HTTP_STATUS.getKey()));
     }
 
     public static class EmbeddedAsyncServlet extends HttpServlet {
