@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.hawkular.apm.tests.common.Wait;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import io.opentracing.mock.MockSpan;
@@ -58,7 +59,7 @@ public class JavaHttpURLConnectionClientITest extends AbstractBaseHttpITest {
     }
 
     @Test
-    @org.junit.Ignore("HWKAPM-863 - multiple spans being created for same single use of HttpURLConnection")
+    @Ignore("HWKAPM-863 - multiple spans being created for same single use of HttpURLConnection")
     public void testHttpURLConnectionInputStreamGETWithFault() throws IOException {
         sendRequestUsingInputStream(new URL(SAY_HELLO_URL), "GET", true);
     }
