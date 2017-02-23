@@ -11,13 +11,13 @@
 
     <h1>{{transactionName}}</h1>
 
-    <alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong>
+    <uib-alert ng-repeat="message in messages" type="{{getMessageType(message)}}" close="closeMessage($index)"><strong>{{getMessageText(message)}}</strong>
       <div ng-hide="message.details === undefined">
         {{message.details}}
       </div>
-    </alert>
+    </uib-alert>
 
-    <a href="#" class="hk-transaction-description" editable-textarea="transaction.description" e-rows="3" e-cols="108" onaftersave="setDirty()" tooltip="Click to edit">
+    <a href="#" class="hk-transaction-description" editable-textarea="transaction.description" e-rows="3" e-cols="108" onaftersave="setDirty()" uib-tooltip="Click to edit">
       <span>{{ transaction.description || 'No description' }}</span>
     </a>
 
@@ -31,16 +31,16 @@
         <h4>Inclusion</h4>
         <!-- TODO: Use angular-ui/bootstrap typeahead to autofill possible inclusion URIs -->
         <ul class="list-group">
-          <li class="list-group-item" ng-repeat="inclusion in transaction.filter.inclusions" >{{inclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeInclusionFilter(inclusion)" tooltip="Remove"></span></li>
+          <li class="list-group-item" ng-repeat="inclusion in transaction.filter.inclusions" >{{inclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeInclusionFilter(inclusion)" uib-tooltip="Remove"></span></li>
           <li class="list-group-item clearfix">
             <form class="form-horizontal" name="addInclusionForm" role="form" autocomplete="off" ng-submit="addInclusionFilter()">
               <div class="input-group">
                 <input type="text" class="form-control" name="newInclusionFilterField"
                      ng-model="newInclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
                      placeholder="Enter an inclusion filter (regular expression)"
-                     typeahead="endpoint for endpoint in unboundEndpoints | filter:$viewValue | limitTo:12" />
+                     uib-typeahead="endpoint for endpoint in unboundEndpoints | filter:$viewValue | limitTo:12" />
                 <span class="input-group-btn">
-                  <button class="btn btn-default" type="submit" ng-disabled="!newInclusionFilter"  tooltip="Add">
+                  <button class="btn btn-default" type="submit" ng-disabled="!newInclusionFilter"  uib-tooltip="Add">
                     <div ng-show="addProgress" class="spinner spinner-sm"></div>
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                   </button>
@@ -54,16 +54,16 @@
       <div class="col-md-6" >
         <h4>Exclusion (applied after inclusions)</h4>
         <ul class="list-group">
-          <li class="list-group-item" ng-repeat="exclusion in transaction.filter.exclusions" >{{exclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeExclusionFilter(exclusion)" tooltip="Remove"></span></li>
+          <li class="list-group-item" ng-repeat="exclusion in transaction.filter.exclusions" >{{exclusion}}<span class="glyphicon glyphicon-remove pull-right" aria-hidden="true" ng-click="removeExclusionFilter(exclusion)" uib-tooltip="Remove"></span></li>
           <li class="list-group-item clearfix" >
             <form class="form-horizontal" name="addExclusionForm" role="form" autocomplete="off" novalidate="" ng-submit="addExclusionFilter()">
               <div class="input-group">
                 <input type="text" class="form-control" name="newExclusionFilterField"
                      ng-model="newExclusionFilter" ng-model-options="{ updateOn: 'default blur'}"
                      placeholder="Enter an exclusion filter (regular expression)"
-                     typeahead="endpoint for endpoint in unboundEndpoints | filter:$viewValue | limitTo:12" />
+                     uib-typeahead="endpoint for endpoint in unboundEndpoints | filter:$viewValue | limitTo:12" />
                 <span class="input-group-btn">
-                  <button class="btn btn-default" type="submit" ng-disabled="!newExclusionFilter" tooltip="Add">
+                  <button class="btn btn-default" type="submit" ng-disabled="!newExclusionFilter" uib-tooltip="Add">
                     <div ng-show="addProgress" class="spinner spinner-sm"></div>
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                   </button>
@@ -93,9 +93,9 @@
 
       <div class="col-md-12" >
 
-        <accordion>
-          <accordion-group ng-repeat="processor in transaction.processors" is-open="false" is-disabled="false">
-            <accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uibTooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></accordion-heading>
+        <uib-accordion>
+          <uib-accordion-group ng-repeat="processor in transaction.processors" is-open="false" is-disabled="false">
+            <uib-accordion-heading>{{processor.description}} <a class="btn btn-link hk-delete pull-right" href="#" uib-tooltip="Delete" tooltip-placement="top" ng-click="deleteProcessor(processor)"><i class="fa fa-trash-o"></i></a></uib-accordion-heading>
 
             <form>
               <div class="form-group clearfix">
@@ -132,7 +132,7 @@
                   <input type="text" name="uriFilter" class="form-control"
                        ng-model="processor.uriFilter" ng-model-options="{ updateOn: 'default blur'}"
                        placeholder="Enter URI filter (regular expression)"
-                       typeahead="endpoint for endpoint in boundEndpoints | filter:$viewValue | limitTo:12"
+                       uib-typeahead="endpoint for endpoint in boundEndpoints | filter:$viewValue | limitTo:12"
                        ng-change="setDirty()" />
                 </div>
               </div>
@@ -202,8 +202,8 @@
               </div>
             </form>
 
-            <div dropdown="">
-              <a href="" id="simple-dropdown" dropdown-toggle="" class="btn btn-default hk-btn-accordeon-add">
+            <div uib-dropdown="">
+              <a href="" id="simple-dropdown" uib-dropdown-toggle="" class="btn btn-default hk-btn-accordeon-add">
                 Add Action
               </a>
               <ul class="dropdown-menu" aria-labelledby="simple-dropdown">
@@ -218,9 +218,9 @@
               </ul>
             </div>
 
-            <accordion>
-              <accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
-                <accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" tooltip="Delete" tooltip-trigger="" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></accordion-heading>
+            <uib-accordion>
+              <uib-accordion-group ng-repeat="action in processor.actions" is-open="false" is-disabled="false">
+                <uib-accordion-heading>[ {{action.actionType}} {{action.name}} ]: {{action.description}} <a class="btn btn-link hk-delete pull-right" href="#" uib-tooltip="Delete" tooltip-placement="top" ng-click="deleteAction(processor,action)"><i class="fa fa-trash-o"></i></a></uib-accordion-heading>
 
                 <form>
                   <div class="form-group clearfix">
@@ -381,11 +381,11 @@
 
                 </form>
 
-              </accordion-group>
-            </accordion>
+              </uib-accordion-group>
+            </uib-accordion>
 
-          </accordion-group>
-        </accordion>
+          </uib-accordion-group>
+        </uib-accordion>
       </div>
 
       <div class="col-md-12">

@@ -305,7 +305,7 @@ module InstanceViewDiagram {
         // add the tooltips aftewards, so they go on the <g> element
         inner.selectAll('g.node.show-tt').attr('tooltip-append-to-body', 'true')
                                           .attr('tooltip-class', 'graph-tooltip')
-                                          .attr('tooltip-html', (d) => {
+                                          .attr('uib-tooltip-html', (d) => {
                                             let tooltipId = d.replace(/\W+/g, '_');
                                             return tooltipId;
                                           });
