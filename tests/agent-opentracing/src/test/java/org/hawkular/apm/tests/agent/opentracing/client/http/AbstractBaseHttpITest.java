@@ -18,9 +18,9 @@ package org.hawkular.apm.tests.agent.opentracing.client.http;
 
 import static io.undertow.Handlers.path;
 
-import org.hawkular.apm.agent.opentracing.OpenTracingManager;
-import org.hawkular.apm.tests.common.ClientTestBase;
-import org.junit.Before;
+import org.hawkular.apm.tests.agent.opentracing.common.OpenTracingAgentTestBase;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
@@ -30,14 +30,14 @@ import io.undertow.util.Headers;
 /**
  * @author gbrown
  */
-public abstract class AbstractBaseHttpITest extends ClientTestBase {
+public abstract class AbstractBaseHttpITest extends OpenTracingAgentTestBase {
 
     private static final String HELLO_WORLD = "Hello World";
 
-    private Undertow server = null;
+    private static Undertow server = null;
 
-    @Override
-    public void init() {
+    @BeforeClass
+    public static void init() {
         server = Undertow.builder()
                 .addHttpListener(8180, "localhost")
                 .setHandler(path().addPrefixPath("sayHello", new HttpHandler() {
@@ -55,22 +55,11 @@ public abstract class AbstractBaseHttpITest extends ClientTestBase {
                 })).build();
 
         server.start();
-
-        super.init();
     }
 
-    @Override
-    public void close() {
+    @AfterClass
+    public static void close() {
         server.stop();
-
-        super.close();
-    }
-
-    @Before
-    public void resetState() {
-        // Reset the state before each test, to avoid side effects from one failing test
-        // affecting others
-        OpenTracingManager.reset();
     }
 
 }

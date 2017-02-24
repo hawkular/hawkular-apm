@@ -9,7 +9,8 @@ AT ENTRY
 IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
-  		.withTag("http.uri", $0.getURL().getPath())
+  		.withTag("span.kind", "client")
+  		.withTag("http.url", $0.getURL().toString())
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
@@ -26,7 +27,8 @@ AT ENTRY
 IF !$0.connected && !hasSpanWithId(String.valueOf($0.hashCode())) && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
-  		.withTag("http.uri", $0.getURL().getPath())
+  		.withTag("span.kind", "client")
+  		.withTag("http.url", $0.getURL().toString())
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
@@ -42,7 +44,8 @@ AT ENTRY
 IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
-  		.withTag("http.uri", $0.getURL().getPath())
+  		.withTag("span.kind", "client")
+  		.withTag("http.url", $0.getURL().toString())
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),
@@ -58,7 +61,8 @@ AT ENTRY
 IF !$0.connected && includePath($0.getURL().getPath()) && !callerMatches("HttpURLConnection.*",true)
 DO
   startSpanWithParent(getTracer().buildSpan($0.getRequestMethod())
-  		.withTag("http.uri", $0.getURL().getPath())
+  		.withTag("span.kind", "client")
+  		.withTag("http.url", $0.getURL().toString())
   		.withTag("http.query", $0.getURL().getQuery()),
   		getSpan(), String.valueOf($0.hashCode()));
   getTracer().inject(getSpan().context(), textMapFormat(),

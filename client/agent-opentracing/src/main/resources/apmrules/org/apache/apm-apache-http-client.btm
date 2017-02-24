@@ -9,7 +9,8 @@ BIND
 IF TRUE
 DO
   startSpanWithParent(getTracer().buildSpan($2.getRequestLine().getMethod())
-  		.withTag("http.uri", uri.getPath())
+  		.withTag("span.kind", "client")
+  		.withTag("http.url", uri.toString())
   		.withTag("http.query", uri.getQuery()),
   		getSpan());
   getTracer().inject(getSpan().context(), textMapFormat(),
