@@ -55,13 +55,13 @@ public class APMSpanBuilder extends AbstractSpanBuilder implements PropagableSta
 
     @Override
     AbstractSpanBuilder withStateItem(String key, Object value) {
-        state.put(key, value);
+        state.put(key.toUpperCase(), value);
         return this;
     }
 
     @Override
     boolean isTraceState(String key, Object value) {
-        return key.startsWith(Constants.HAWKULAR_APM_PREFIX);
+        return key.toUpperCase().startsWith(Constants.HAWKULAR_APM_PREFIX.toUpperCase());
     }
 
     @Override
