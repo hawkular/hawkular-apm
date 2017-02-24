@@ -21,8 +21,8 @@ module E2E {
   declare let dagreD3: any;
 
   export let E2EController = _module.controller('E2E.E2EController', ['$scope', '$rootScope', '$routeParams', '$http',
-    '$location', '$interval', '$timeout', '$modal', ($scope, $rootScope, $routeParams, $http, $location, $interval,
-    $timeout, $modal) => {
+    '$location', '$interval', '$timeout', '$uibModal', ($scope, $rootScope, $routeParams, $http, $location, $interval,
+    $timeout, $uibModal) => {
 
     $scope.reload = function() {
 
@@ -123,7 +123,7 @@ module E2E {
       }
     };
 
-    let ModalInstanceCtrl = function ($scope, $modalInstance, $log, rootNode, topLevel, uris, operations) {
+    let ModalInstanceCtrl = function ($scope, $uibModalInstance, $log, rootNode, topLevel, uris, operations) {
 
       $scope.rootNode = {
         'uri': rootNode
@@ -224,12 +224,12 @@ module E2E {
       };
 
       $scope.close = function() {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     };
 
     $scope.showInstanceDetails = function() {
-      $modal.open({
+      $uibModal.open({
         templateUrl: 'plugins/e2e/html/details-modal.html',
         controller: ModalInstanceCtrl,
         size: 'xl',

@@ -143,16 +143,16 @@ module DagreD3 {
         let res = inner.call(render, g);
 
         // add the tooltips aftewards, so they go on the <g> element
-        inner.selectAll('g.node.show-tt').on('mouseenter', null).attr('tooltip-append-to-body', 'true')
+        inner.selectAll('g.node.show-tt').attr('tooltip-append-to-body', 'true')
                                   .attr('tooltip-class', 'graph-tooltip')
-                                  .attr('tooltip-html', (d) => {
+                                  .attr('uib-tooltip-html', (d) => {
                                     let tooltipId = d.replace(/\W+/g, '_');
                                     return tooltipId;
                                   });
 
         inner.selectAll('g.edgeLabel').attr('tooltip-append-to-body', 'true')
                                       .attr('tooltip-class', 'graph-tooltip')
-                                      .attr('tooltip-html', (d) => {
+                                      .attr('uib-tooltip-html', (d) => {
                                         let tooltipId = d.v.replace(/\W+/g, '_') + '___' + d.w.replace(/\W+/g, '_');
                                         return tooltipId;
                                       });
