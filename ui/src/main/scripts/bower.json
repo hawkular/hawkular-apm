@@ -38,6 +38,7 @@
     "angular-xeditable": "0.1.10",
     "angular-utils-pagination": "0.9.4",
     "dagre-d3": "0.4.17",
+    "d3-tip": "0.6.7",
     "eonasdan-bootstrap-datetimepicker": "4.17.37"
   },
   "devDependencies": {
@@ -45,7 +46,7 @@
   },
   "resolutions": {
     "angular": "1.5.0",
-    "d3": "3.5.5",
+    "d3": "3.5.17",
     "jquery": "1.9.1",
     "lodash": "3.2.0",
     "moment": "2.12.0"
