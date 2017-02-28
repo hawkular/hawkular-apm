@@ -37,14 +37,15 @@ module Timeline {
 
     private doLink(scope, elm, attrs, ctrl, $compile, $sce, $location, $timeout, hkDurationFilter): void {
 
+      let curNodes = [];
       let revNodes = [];
 
-      let parseNode = function(node) {
-        node.children = _.filter(scope[attrs['nodes']], (n: any) => {
+      let parseNode = function(node, nodes) {
+        node.children = _.filter(nodes, (n: any) => {
           return n.references.length > 0 && n.references[0].spanId === node.spanId;
         });
         _.forEach(node.children, (n) => {
-          parseNode(n);
+          parseNode(n, nodes);
         });
       };
 
@@ -53,12 +54,12 @@ module Timeline {
         _.forEach(nodes, (n) => {
           if (n.references.length === 0) {
             tmpRevNodes.push(n);
-            parseNode(n);
+            parseNode(n, nodes);
           }
         });
         return tmpRevNodes;
       };
-      revNodes = reverseRelationships(scope[attrs['nodes']]);
+      revNodes = reverseRelationships(curNodes);
 
       let drawBars = undefined;
 
@@ -81,6 +82,7 @@ module Timeline {
       let xTicks = 7; // number of ticks on the x axis
 
       let draggable = true; // ability to drag the chart
+      let dragSpeed = 15; // factor to multiply mouse cursor change when dragging
 
       let scrubbable = true; // show the scrubber, a line following mouse cursor with timestamp
 
@@ -147,8 +149,8 @@ module Timeline {
       };
 
       let width = elm[0].clientWidth - margin.left - margin.right;
-      let height = scope[attrs['nodes']].length * (barHeight + barSpacing) + margin.top + margin.bottom;
       let actualHeight = scope[attrs['nodes']].length * (barHeight + barSpacing);
+      let height = actualHeight + margin.top + margin.bottom;
 
       let svg = d3.select('#timeline-container').append('svg')
                                                 .attr('width', elm[0].clientWidth - margin.right)
@@ -170,7 +172,6 @@ module Timeline {
                                .range([0, actualHeight]);
 
       if (showYAxis) {
-
         let yAxis = d3.svg.axis()
                           .scale(yAxisScale)
                           .orient('left')
@@ -226,21 +227,31 @@ module Timeline {
           });
       }
 
-      let deepCheck = false;
-      // Enable this for watching data changes... beware that due to d3 tree, it generates a cyclic graph which
-      // fails to be watched, need to find some other simpler way to watch this if needed
-
       scope.$watch(attrs['nodes'], (newNodes) => {
-        maxTime = _.max(newNodes, (n) => { return n['endTimestamp']; })['endTimestamp'];
+        curNodes = angular.copy(newNodes);
+        maxTime = _.max(curNodes, (n) => { return n['endTimestamp']; })['endTimestamp'];
+        actualHeight = curNodes.length * (barHeight + barSpacing);
+        svg.attr('height', actualHeight + margin.top + margin.bottom);
+        svg.select('#timeline-clipper rect').attr('height', actualHeight + margin.top + margin.bottom);
+        svg.select('.x.axis.bottom')
+          .attr('transform', 'translate(' + margin.left + ',' + (margin.top + actualHeight) + ' )');
+        yAxisScale.domain([0, actualHeight])
+                  .range([0, actualHeight]);
+        let yAxis = d3.svg.axis()
+                          .scale(yAxisScale)
+                          .orient('left')
+                          .ticks(0);
+        svg.select('.y.axis').call(yAxis);
         if (isOverview) {
-          barHeight = Math.min(height / newNodes.length - barSpacing, 3);
+          barHeight = Math.min(height / curNodes.length - barSpacing, 3);
           xAxisScale.domain([0, maxTime]);
         } else {
-          barHeight = (height - margin.top - margin.bottom) / newNodes.length - barSpacing;
+          // if we want to resize bars to a predefined height instead...
+          // barHeight = (height - margin.top - margin.bottom) / curNodes.length - barSpacing;
         }
-        revNodes = reverseRelationships(newNodes);
+        revNodes = reverseRelationships(curNodes);
         drawBars();
-      }, deepCheck);
+      }, true);
 
       // Bars
 
@@ -352,8 +363,27 @@ module Timeline {
           logs.exit().remove();
         });
 
-        if (showYAxis) {
+        if (showXAxis) {
+          svg.selectAll('.x.axis.top').call(xAxisTop);
+          svg.selectAll('.x.axis.bottom').call(xAxisBottom);
 
+          svg.selectAll('.horizontalGrid').remove();
+          xGridLines.selectAll('.x-grid-lines').data(xAxisScale.ticks(xTicks)).enter().append('line')
+          .attr(
+          {
+              'class': 'horizontalGrid',
+              'x1' : (d) => { return xAxisScale(d); },
+              'x2' : (d) => { return xAxisScale(d); },
+              'y1' : actualHeight,
+              'y2' : 0,
+              'fill' : 'none',
+              'shape-rendering' : 'crispEdges',
+              'stroke' : '#DADADA',
+              'stroke-width' : '1px'
+          });
+        }
+
+        if (showYAxis) {
           // FIXME: For some reason just updating (when collapsing) is not working properly...
           labels.selectAll('.timeline-hk-y-label').remove();
 
@@ -370,7 +400,7 @@ module Timeline {
 
             linkItems.exit().remove();
 
-            linkItems.attr('d', function(d, i) {
+            linkItems.attr('d', (d, i) => {
               let sY = treeNodes.indexOf(d.source) * (barHeight + barSpacing);
               let tY = treeNodes.indexOf(d.target) * (barHeight + barSpacing);
               return 'M' + (-208 + d.source.depth * yAxisIndent) + ',' + yAxisScale(sY + 3) +
@@ -421,26 +451,6 @@ module Timeline {
         }
         brushSize = newRange[1] - newRange[0];
         xAxisScale.domain(newRange);
-        if (showXAxis) {
-          svg.selectAll('.x.axis.top')
-              .call(xAxisTop);
-          svg.selectAll('.x.axis.bottom').call(xAxisBottom);
-
-          svg.selectAll('.horizontalGrid').remove();
-          xGridLines.selectAll('.x-grid-lines').data(xAxisScale.ticks(xTicks)).enter().append('line')
-          .attr(
-          {
-              'class': 'horizontalGrid',
-              'x1' : (d) => { return xAxisScale(d); },
-              'x2' : (d) => { return xAxisScale(d); },
-              'y1' : actualHeight,
-              'y2' : 0,
-              'fill' : 'none',
-              'shape-rendering' : 'crispEdges',
-              'stroke' : '#DADADA',
-              'stroke-width' : '1px'
-          });
-        }
         drawBars();
       };
 
@@ -472,7 +482,7 @@ module Timeline {
                                    .attr('transform', 'translate(5,' + y + ')');
             let bars = svg.select('.content').selectAll('.bar');
             bars.each(function(bar) {
-              d3.select(this).classed('hover', function(x) {
+              d3.select(this).classed('hover', (x) => {
                 return currentTimePos >= bar.startTimestamp && currentTimePos <= bar.endTimestamp;
               });
             });
@@ -500,7 +510,7 @@ module Timeline {
         drag.on('drag', () => {
           $timeout((event) => {
             if (event && event.dx) {
-              let newX1 = Math.max(0, scope['tlViewRange'][0] - event.dx * 10);
+              let newX1 = Math.max(0, scope['tlViewRange'][0] - event.dx * dragSpeed);
               let newX2 = Math.min(newX1 + brushSize, maxTime + xExtraTime);
               newX1 = Math.min(newX1, newX2 - brushSize);
               scope.changeRange(newX1, newX2);
