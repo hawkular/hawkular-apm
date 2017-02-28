@@ -46,7 +46,7 @@
 
     <div class="hk-filter-v-block" ng-if="fsb.showBtxns">
       <label><button class="btn-link" ng-click="showSearchBtxn = !showSearchBtxn"><i class="fa" ng-class="showSearchBtxn ? 'fa-angle-right' : 'fa-angle-down'"></i>Transaction</button></label>
-      <div collapse="showSearchBtxn">
+      <div uib-collapse="showSearchBtxn">
         <div class="radio">
           <label><input type="radio" name="txn" ng-model="$root.sbFilter.criteria.transaction" value="" checked> All </label>
         </div>
@@ -58,7 +58,7 @@
 
     <div class="hk-filter-v-block" ng-show="fsb.showProps">
       <label><button class="btn-link" ng-click="showSearchProp = !showSearchProp"><i class="fa" ng-class="showSearchProp ? 'fa-angle-right' : 'fa-angle-down'"></i>Properties</button></label>
-      <div collapse="showSearchProp">
+      <div uib-collapse="showSearchProp">
 
         <ul ng-repeat="(type, value) in $root.sbFilter.criteria.properties | groupBy: 'name'" class="fa-ul">
           <label class="sb-prop-title">{{ type }}</label>
@@ -86,10 +86,10 @@
             <label> Value </label>
             <div class="input-group">
               <!-- <span class="input-group-addon">Value</span> -->
-              <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
+              <input uib-collapse="showSearchHost" type="text" class="form-control" name="propValueField"
                 ng-model="$root.sbFilter.selPropValue" ng-model-options="{ updateOn: 'default blur' }"
                 placeholder="Type '{{$root.sbFilter.selPropName.name}}' value" typeahead-editable="false"
-                typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" />
+                uib-typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" />
               <div class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-disabled="!$root.sbFilter.selPropValue"
                   ng-click="addPropertyToFilter($root.sbFilter.selPropName.name, $root.sbFilter.selPropValue, 'HAS')">
@@ -113,10 +113,10 @@
 
     <div class="hk-filter-v-block" ng-class="{'has-error': invalidHostname}" ng-if="fsb.showHosts">
       <label><button class="btn-link" ng-click="showSearchHost = !showSearchHost"><i class="fa" ng-class="showSearchHost ? 'fa-angle-right' : 'fa-angle-down'"></i>Host Name</button></label>
-      <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
+      <input uib-collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
          ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
          placeholder="Enter a host name" typeahead-editable="false" typeahead-min-length="0"
-         typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" typeahead-no-results="invalidHostname" />
+         uib-typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" typeahead-no-results="invalidHostname" />
     </div>
 
   </div>
@@ -162,7 +162,7 @@
       <uib-accordion-heading>
         Transaction <span class="pull-right">{{ $root.sbFilter.criteria.transaction || "All" }}</span>
       </uib-accordion-heading>
-      <div collapse="showSearchBtxn">
+      <div uib-collapse="showSearchBtxn">
         <div class="radio">
           <label><input type="radio" name="txn-msb" ng-model="$root.sbFilter.criteria.transaction" value="" checked> All </label>
         </div>
@@ -202,10 +202,10 @@
           <label> Value </label>
           <div class="input-group" style="display: table; width: 100%;">
             <!-- <span class="input-group-addon">Value</span> -->
-            <input collapse="showSearchHost" type="text" class="form-control" name="propValueField"
+            <input uib-collapse="showSearchHost" type="text" class="form-control" name="propValueField"
               ng-model="$root.sbFilter.selPropValue" ng-model-options="{ updateOn: 'default blur' }"
               placeholder="Type '{{$root.sbFilter.selPropName.name}}' value" typeahead-editable="false"
-              typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" style="width: calc(100% - 45px);" />
+              uib-typeahead="propValue.value for propValue in sbPropertyValues | filter:$viewValue | limitTo:12" style="width: calc(100% - 45px);" />
             <div class="input-group-btn" style="clear: initial;">
               <button type="button" class="btn btn-default" ng-disabled="!$root.sbFilter.selPropValue"
                 ng-click="addPropertyToFilter($root.sbFilter.selPropName.name, $root.sbFilter.selPropValue, 'HAS')">
@@ -231,10 +231,10 @@
         Host Name <span class="pull-right">{{ $root.sbFilter.criteria.hostName | limitTo: 20 }}<span ng-show="$root.sbFilter.search.length > 20">...</span></span>
       </uib-accordion-heading>
       <div class="hk-filter-v-block" ng-class="{'has-error': invalidHostname}">
-        <input collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
+        <input uib-collapse="showSearchHost" type="text" class="form-control" name="hostNameField"
          ng-model="$root.sbFilter.criteria.hostName" ng-model-options="{ updateOn: 'default blur' }"
          placeholder="Enter a host name" typeahead-editable="false" typeahead-min-length="0"
-         typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" typeahead-no-results="invalidHostname" />
+         uib-typeahead="hostName for hostName in $root.sbFilter.data.hostNames | filter:$viewValue | limitTo:12" typeahead-no-results="invalidHostname" />
       </div>
     </uib-accordion-group>
   </uib-accordion>

@@ -18,7 +18,6 @@ package org.hawkular.apm.tests.agent.opentracing.client.http;
 
 import static org.junit.Assert.assertEquals;
 
-import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -27,12 +26,10 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
-import org.hawkular.apm.api.model.Constants;
-import org.hawkular.apm.api.model.trace.Producer;
-import org.hawkular.apm.api.utils.NodeUtil;
 import org.hawkular.apm.tests.common.Wait;
 import org.junit.Test;
 
+import io.opentracing.mock.MockSpan;
 import io.opentracing.tag.Tags;
 
 /**
@@ -52,7 +49,7 @@ public class JBossRESTEasyClientITest extends AbstractBaseHttpITest {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").get();
 
-        processResponse(response, false, false);
+        processResponse(response, false, false, "GET", SAY_HELLO_URL);
     }
 
     @Test
@@ -61,18 +58,7 @@ public class JBossRESTEasyClientITest extends AbstractBaseHttpITest {
         WebTarget target = client.target(SAY_HELLO_URL_WITH_QS);
         Response response = target.request().header("test-header", "test-value").get();
 
-        processResponse(response, false, true);
-    }
-
-    @Test
-    public void testJaxRSClientGETWithData() {
-        setProcessContent(true);
-
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").get();
-
-        processResponse(response, false, false);
+        processResponse(response, false, true, "GET", SAY_HELLO_URL_WITH_QS);
     }
 
     @Test
@@ -81,18 +67,7 @@ public class JBossRESTEasyClientITest extends AbstractBaseHttpITest {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").post(Entity.<String> text(SAY_HELLO));
 
-        processResponse(response, false, false);
-    }
-
-    @Test
-    public void testJaxRSClientPOSTWithData() {
-        setProcessContent(true);
-
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").post(Entity.<String> text(SAY_HELLO));
-
-        processResponse(response, false, false);
+        processResponse(response, false, false, "POST", SAY_HELLO_URL);
     }
 
     @Test
@@ -101,18 +76,7 @@ public class JBossRESTEasyClientITest extends AbstractBaseHttpITest {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-header", "test-value").put(Entity.<String> text(SAY_HELLO));
 
-        processResponse(response, false, false);
-    }
-
-    @Test
-    public void testJaxRSClientPUTWithData() {
-        setProcessContent(true);
-
-        Client client = ClientBuilder.newClient();
-        WebTarget target = client.target(SAY_HELLO_URL);
-        Response response = target.request().header("test-header", "test-value").put(Entity.<String> text(SAY_HELLO));
-
-        processResponse(response, false, false);
+        processResponse(response, false, false, "PUT", SAY_HELLO_URL);
     }
 
     @Test
@@ -121,10 +85,10 @@ public class JBossRESTEasyClientITest extends AbstractBaseHttpITest {
         WebTarget target = client.target(SAY_HELLO_URL);
         Response response = target.request().header("test-fault", "true").get();
 
-        processResponse(response, true, false);
+        processResponse(response, true, false, "GET", SAY_HELLO_URL);
     }
 
-    protected void processResponse(Response response, boolean fault, boolean qs) {
+    protected void processResponse(Response response, boolean fault, boolean qs, String method, String url) {
         String value = response.readEntity(String.class);
         response.close();
 
@@ -132,28 +96,15 @@ public class JBossRESTEasyClientITest extends AbstractBaseHttpITest {
             assertEquals(HELLO_WORLD, value);
         }
 
-        Wait.until(() -> getApmMockServer().getTraces().size() == 1);
+        Wait.until(() -> getTracer().finishedSpans().size() == 1);
 
-        // Check stored traces (including 1 for the test client)
-        assertEquals(1, getApmMockServer().getTraces().size());
-
-        List<Producer> producers = NodeUtil.findNodes(getApmMockServer().getTraces().get(0).getNodes(), Producer.class);
-
-        assertEquals("Expecting 1 producers", 1, producers.size());
-
-        Producer testProducer = producers.get(0);
-
-        String path=URI.create(SAY_HELLO_URL).getPath();
-
-        assertEquals(path, testProducer.getUri());
-
-        if (qs) {
-            assertEquals(QUERY_STRING, testProducer.getProperties(Constants.PROP_HTTP_QUERY).iterator().next().getValue());
-        }
-
+        List<MockSpan> spans = getTracer().finishedSpans();
+        assertEquals(1, spans.size());
+        assertEquals(Tags.SPAN_KIND_CLIENT, spans.get(0).tags().get(Tags.SPAN_KIND.getKey()));
+        assertEquals(method, spans.get(0).operationName());
+        assertEquals(url, spans.get(0).tags().get(Tags.HTTP_URL.getKey()));
         if (fault) {
-            assertEquals("401", testProducer.getProperties(Tags.HTTP_STATUS.getKey())
-                    .iterator().next().getValue());
+            assertEquals("401", spans.get(0).tags().get(Tags.HTTP_STATUS.getKey()));
         }
     }
 

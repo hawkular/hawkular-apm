@@ -92,12 +92,12 @@
         <tbody>
           <tr dir-paginate="summary in summaries|orderBy:sortKey:reverse|filter:$root.sbFilter.search|itemsPerPage:config.maxRows" ng-class="{'danger': getElapsedPercentage(summary) > 80,'warning': getElapsedPercentage(summary) > 60}" >
             <td scope="row">
-              <progress>
-                <bar type="danger" value="getActualPercentage(summary)">
-                </bar>
-                <bar type="warning" value="getElapsedMinusActualPercentage(summary)">
-                </bar>
-              </progress>
+              <uib-progress>
+                <uib-bar type="danger" value="getActualPercentage(summary)">
+                </uib-bar>
+                <uib-bar type="warning" value="getElapsedMinusActualPercentage(summary)">
+                </uib-bar>
+              </uib-progress>
             </td>
             <td scope="row">{{ summary.actual | hkDuration }}</td>
             <td scope="row">{{ summary.elapsed | hkDuration }}</td>

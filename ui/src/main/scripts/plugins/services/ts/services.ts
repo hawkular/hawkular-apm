@@ -23,6 +23,9 @@ module Services {
   export let ServicesController = _module.controller('Services.ServicesController', ['$scope', '$rootScope', '$http',
     '$q', '$interval', '$timeout', ($scope, $rootScope, $http, $q, $interval, $timeout) => {
 
+    // just used internally for identifying the special version
+    const ALL_IND_VERSION = '***ALL_IND***';
+
     $scope.services = [];
     $scope.buildStamps = [];
 
@@ -30,6 +33,9 @@ module Services {
       if ($scope.service && $scope.service.name) {
         $scope.buildStamp = undefined;
         $scope.buildStamps = _.find($scope.services, 'name', $scope.service.name)['buildStamps'];
+      }
+      if ($scope.buildStamps.length > 0) {
+        $scope.buildStamps.unshift({'name': 'All (Individually)', 'label': 'All (Ind)' , 'value': ALL_IND_VERSION});
       }
     };
 
@@ -90,19 +96,50 @@ module Services {
         console.log('Failed to get statistics: ' + angular.toJson(resp));
       };
 
+      /**
+       * Fills arr[idxTS2] with timestamps and arr[idxTS2+1] with <value>
+       * from the timestamps present in arr[idxTS1] that aren't present in arr[idxTS2]
+       */
+      let fillGapsWithValue = function(arr, idxTS1, idxTS2, value) {
+        let diff = _.difference(arr[idxTS1], arr[idxTS2]);
+        _.each(diff, (ts: any) => {
+          if(!isNaN(ts)) {
+            let pos = _.sortedIndex(arr[idxTS2], ts);
+            if (pos !== 0 && pos < arr[idxTS2].length) {
+              arr[idxTS2].splice(pos, 0, ts);
+              arr[idxTS2 + 1].splice(pos, 0, value);
+            }
+          }
+        });
+      };
+
+      let makeServiceDataRequest = function(criteria, serviceName, buildStamp) {
+        return $http.get('/hawkular/apm/analytics/endpoint/response/statistics?interval=' + $scope.config.interval +
+          '&criteria=' + encodeURI(angular.toJson(criteria))).then(
+          successFn.bind(null, serviceName + '/' + buildStamp), errorFn);
+      };
+
       let promises = [];
       _.forEach($scope.selectedServices, (ss) => {
         let serviceCriteria = angular.copy(txnCriteria);
         serviceCriteria.properties = [{name: 'service', value: ss.service.name, operator: 'HAS'}];
-        let buildStamp = 'All';
+        let buildStamp = 'All (Agg)';
         if (ss.buildStamp && ss.buildStamp.value) {
-          serviceCriteria.properties.push({name: 'buildStamp', value: ss.buildStamp.value});
-          buildStamp = ss.buildStamp.value;
+          if (ss.buildStamp.value === ALL_IND_VERSION) {
+            _.forEach(_.find($scope.services, 'name', ss.service.name)['buildStamps'], (bs) => {
+              let newServiceCriteria = angular.copy(serviceCriteria);
+              newServiceCriteria.properties.push({name: 'buildStamp', value: bs.value});
+              buildStamp = bs.value;
+              promises.push(makeServiceDataRequest(newServiceCriteria, ss.service.name, buildStamp));
+            });
+          } else {
+            serviceCriteria.properties.push({name: 'buildStamp', value: ss.buildStamp.value});
+            buildStamp = ss.buildStamp.value;
+          }
         }
-        promises.push(
-          $http.get('/hawkular/apm/analytics/endpoint/response/statistics?interval=' + $scope.config.interval +
-          '&criteria=' + encodeURI(angular.toJson(serviceCriteria))).then(
-          successFn.bind(null, ss.service.name + '/' + buildStamp), errorFn));
+        if (!ss.buildStamp || ss.buildStamp.value !== ALL_IND_VERSION) {
+          promises.push(makeServiceDataRequest(serviceCriteria, ss.service.name, buildStamp));
+        }
       });
 
       $q.all(promises).then((data) => {
@@ -110,13 +147,23 @@ module Services {
         let tmpTxFaultData = [];
 
         _.forEach(data, (d) => {
-          tmpStatistics.push(d[0]);
-          tmpStatistics.push(d[1]);
+          tmpStatistics.push(angular.copy(d[0]));
+          tmpStatistics.push(angular.copy(d[1]));
 
-          tmpTxFaultData.push(d[0]);
-          tmpTxFaultData.push(d[2]);
-          tmpTxFaultData.push(d[3]);
+          tmpTxFaultData.push(angular.copy(d[0]));
+          tmpTxFaultData.push(angular.copy(d[2]));
+          tmpTxFaultData.push(angular.copy(d[3]));
         });
+
+        if (tmpStatistics.length > 2) {
+          for(let i = 0; i < tmpStatistics.length; i += 2) {
+            for(let j = i + 2; j < tmpStatistics.length; j += 2) {
+              fillGapsWithValue(tmpStatistics, i, j, null);
+              fillGapsWithValue(tmpStatistics, j, i, null);
+            }
+          }
+        }
+
         $scope.statistics = tmpStatistics;
         $scope.tfData = tmpTxFaultData;
         $scope.redrawCompRTChart();
@@ -126,6 +173,9 @@ module Services {
 
     $scope.statistics = [];
     $scope.rtChartConfig = {
+      padding: {
+        left: 50,
+      },
       data: {
         columns: [],
         type: 'area',
@@ -155,6 +205,9 @@ module Services {
     };
 
     $scope.tfChartConfig = {
+      padding: {
+        left: 50,
+      },
       data: {
         columns: [],
         type: 'bar',

@@ -208,8 +208,7 @@ module InstanceViewDiagram {
           let tooltipId = d.customId.replace(/\W+/g, '_');
           scope[tooltipId] = $sce.trustAsHtml(nodeTT);
 
-          let html = '<div class="node-label"' + ((nodeTT.length > 9) ? (' tooltip-append-to-body="true" ' +
-            'tooltip-class="graph-tooltip" tooltip-html="' + tooltipId + '"') : '') + '>';
+          let html = '<div class="node-label">';
           if (theShape === 'circle') {
             label = '<div><i class="fa fa-share-alt spawn"></i></div>';
           } else {
@@ -239,7 +238,7 @@ module InstanceViewDiagram {
             shape: theShape,
             labelType: 'html',
             label: html,
-            class: 'entity severity' + d.severity + ' ' + theShape,
+            class: 'entity severity' + d.severity + ' ' + theShape + (nodeTT.length > 9 ? ' show-tt' : ''),
             rx: 5,
             ry: 5,
             padding: 0
@@ -302,7 +301,18 @@ module InstanceViewDiagram {
         inner.attr('transform', '');
 
         let res = inner.call(render, g);
-        $compile(res[0])(scope);
+
+        // add the tooltips aftewards, so they go on the <g> element
+        inner.selectAll('g.node.show-tt').attr('tooltip-append-to-body', 'true')
+                                          .attr('tooltip-class', 'graph-tooltip')
+                                          .attr('uib-tooltip-html', (d) => {
+                                            let tooltipId = d.replace(/\W+/g, '_');
+                                            return tooltipId;
+                                          });
+
+        if (!isUpdate) {
+          $compile(res[0])(scope);
+        }
 
         inner.attr('transform', curTransform);
 
