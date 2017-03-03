@@ -117,7 +117,7 @@ public class DefaultTraceCollectorTest {
 
         Wait.until(() -> traceService.getTraces().size() == 1);
         // Clear property
-        System.getProperties().remove("HAWKULAR_APM_TENANTID");
+        System.getProperties().remove("HAWKULAR_APM_TENANT_ID");
 
         assertNotNull("TenantId should not be null", traceService.getTenantId());
 
