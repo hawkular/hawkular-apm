@@ -44,7 +44,7 @@ public class BatchTraceRecorder implements TraceRecorder {
     private static final int DEFAULT_BATCH_THREAD_POOL_SIZE = 5;
     private static final int DEFAULT_BATCH_TIME = 500;
     private static final int DEFAULT_BATCH_SIZE = 1000;
-    private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANTID";
+    private static final String HAWKULAR_APM_TENANT_ID = "HAWKULAR_APM_TENANT_ID";
 
     private TracePublisher tracePublisher;
 
