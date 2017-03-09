@@ -323,7 +323,7 @@
                     <javaOpt>-javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar</javaOpt>
                     <javaOpt>-DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig</javaOpt>
                     <javaOpt>-DHAWKULAR_APM_URI=${HAWKULAR_APM_URI}</javaOpt>
-                    <javaOpt>-DHAWKULAR_APM_USERNAME=jdoe</javaOpt>
+                    <javaOpt>-DHAWKULAR_APM_USERNAME=admin</javaOpt>
                     <javaOpt>-DHAWKULAR_APM_PASSWORD=password</javaOpt>
                     <javaOpt>-Djboss.modules.system.pkgs=org.jboss.byteman,org.hawkular.apm.instrumenter,org.hawkular.apm.client.collector</javaOpt>
                     <javaOpt>-DHAWKULAR_APM_LOG_LEVEL=INFO</javaOpt>

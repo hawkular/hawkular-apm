@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+ * Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
  * and other contributors as indicated by the @author tags.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 'use strict';
 
 const http = require('http');
@@ -28,7 +27,7 @@ const SERVER_PORT = 3001;
 const CONTEXT_PATH = '/nodejs';
 
 opentracing.initGlobalTracer(new hawkularAPM.APMTracer({
-    recorder: new hawkularAPM.HttpRecorder('http://hawkular-apm:9080', 'jdoe', 'password'),
+    recorder: new hawkularAPM.HttpRecorder('http://hawkular-apm:9080', 'admin', 'password'),
     sampler: new hawkularAPM.AlwaysSample(),
 }));
 
@@ -87,7 +86,7 @@ dispatcher.onGet(`${CONTEXT_PATH}/user`, function(req, res) {
         serverSpan.setTag('http.status_code', 200);
         serverSpan.finish();
         res.writeHead(200);
-        res.end(JSON.stringify({name: "jdoe"}));
+        res.end(JSON.stringify({name: "admin"}));
     });
 });
 

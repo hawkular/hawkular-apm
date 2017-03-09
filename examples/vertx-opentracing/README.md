@@ -113,7 +113,7 @@ It's possible to run the examples outside of OpenShift as well. Assuming a Hawku
 it's necessary to first export the required environment variables:
 
     export HAWKULAR_APM_URI="http://127.0.0.1:8080"
-    export HAWKULAR_APM_USERNAME="jdoe"
+    export HAWKULAR_APM_USERNAME="admin"
     export HAWKULAR_APM_PASSWORD="password"
 
 Then, each microservice has to be started, possibly on its own terminal (don't forget to set the env vars above on each terminal).

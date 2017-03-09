@@ -207,7 +207,7 @@
                 -javaagent:${hawkular-apm.lib}/hawkular-apm-agent.jar
                 -DHAWKULAR_APM_CONFIG=${hawkular-apm.instrumentation}/apmconfig
                 -DHAWKULAR_APM_URI=${hawkular.uri}
-                -DHAWKULAR_APM_USERNAME=jdoe
+                -DHAWKULAR_APM_USERNAME=admin
                 -DHAWKULAR_APM_PASSWORD=password
                 -Djava.util.logging.config.file=${hawkular-apm.logging}
                 -Dhawkular-apm.test.mode=true

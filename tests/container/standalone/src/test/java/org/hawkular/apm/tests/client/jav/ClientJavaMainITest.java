@@ -46,7 +46,7 @@ public class ClientJavaMainITest {
     private static String testAPMServerUri = PropertyUtil.getProperty(PropertyUtil.HAWKULAR_APM_URI);
 
     private static final String TEST_PASSWORD = "password";
-    private static final String TEST_USERNAME = "jdoe";
+    private static final String TEST_USERNAME = "admin";
 
     @BeforeClass
     public static void waitForServer() throws MalformedURLException {

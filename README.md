@@ -42,13 +42,13 @@ To build and run execute:
 $ mvn clean install -Pdev -DskipTests [-Pitest]
 $ dist/target/hawkular-apm-${version}/bin/standalone.sh [-Djboss.http.port=9411]
 
--> go to http://localhost:[8080|9411]/ and log in with jdoe:password
+-> go to http://localhost:[8080|9411]/ and log in with admin:password
 ```
 
 The parameters to these commands are:
 
 * `-Djboss.http.port=9411` - bind APM port to [Zipkin](http://zipkin.io/) 9411 port. Default APM port is 8080.
-* `-Pdev` - create user jdoe:password
+* `-Pdev` - create user admin:password
 * `-Pitest` - run integration tests
 
 Add non-intrusive Java instrumentation to instrument your applications ([doc](https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/installation/JVMAGENT.html)):

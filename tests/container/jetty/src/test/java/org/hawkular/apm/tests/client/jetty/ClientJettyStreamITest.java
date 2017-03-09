@@ -66,7 +66,7 @@ import io.opentracing.tag.Tags;
  */
 public class ClientJettyStreamITest extends ClientTestBase {
 
-    private static final String TEST_USER = "jdoe";
+    private static final String TEST_USER = "admin";
     private static final String GREETINGS_REQUEST = "Greetings";
     private static final String TEST_HEADER = "test-header";
     private static final String HELLO_URL = "http://localhost:8180/hello";

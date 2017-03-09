@@ -59,6 +59,6 @@ public class UsersHandler {
          */
         span.close();
 
-        return Response.ok("{name: \"jdoe\"}").build();
+        return Response.ok("{name: \"admin\"}").build();
     }
 }
