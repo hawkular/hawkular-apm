@@ -20,6 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
+import io.opentracing.tag.Tags;
+
 /**
  * This class provides utility functions for processing tags.
  *
@@ -35,7 +37,7 @@ public class TagUtil {
      * @return Whether the key relates to a URI
      */
     public static boolean isUriKey(String key) {
-        return key.endsWith(".url") || key.endsWith(".uri");
+        return Tags.HTTP_URL.getKey().equals(key);
     }
 
     /**
