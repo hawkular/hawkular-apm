@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.hawkular.apm</groupId>
     <artifactId>hawkular-apm-tests-parent</artifactId>
-    <version>0.14.4.Final</version>
+    <version>0.14.5.Final-SNAPSHOT</version>
     <relativePath>../../../pom.xml</relativePath>
   </parent>
 
