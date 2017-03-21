@@ -47,4 +47,13 @@ public class APMTracer extends AbstractAPMTracer {
     public APMTracer(TraceRecorder recorder, Sampler sampler, DeploymentMetaData deploymentMetaData) {
         super(new EnvironmentAwareTraceRecorder(recorder, deploymentMetaData), sampler);
     }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Hawkular APM Tracer [");
+        builder.append(getTraceRecorder().toString());
+        builder.append(']');
+        return builder.toString();
+    }
+
 }

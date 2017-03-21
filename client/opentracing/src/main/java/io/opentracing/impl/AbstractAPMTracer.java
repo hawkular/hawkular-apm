@@ -59,6 +59,14 @@ public abstract class AbstractAPMTracer extends AbstractTracer {
         this.recorder = recorder;
     }
 
+    protected TraceRecorder getTraceRecorder() {
+        return this.recorder;
+    }
+
+    protected Sampler getSampler() {
+        return this.sampler.getDelegate();
+    }
+
     @Override
     APMSpanBuilder createSpanBuilder(String operationName) {
         return new APMSpanBuilder(operationName, recorder, sampler);

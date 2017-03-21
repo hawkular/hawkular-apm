@@ -49,4 +49,9 @@ public final class ContextSampler {
 
         return delegate.isSampled(trace);
     }
+
+    public Sampler getDelegate() {
+        return delegate;
+    }
+
 }

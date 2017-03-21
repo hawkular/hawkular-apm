@@ -55,4 +55,9 @@ public class EnvironmentAwareTraceRecorder implements TraceRecorder {
     public DeploymentMetaData getDeploymentMetaData() {
         return deploymentMetaData;
     }
+
+    public String toString() {
+        return backingTraceRecorder.toString();
+    }
+
 }
