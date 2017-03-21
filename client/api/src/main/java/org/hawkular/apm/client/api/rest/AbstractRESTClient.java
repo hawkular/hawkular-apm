@@ -51,6 +51,7 @@ public class AbstractRESTClient implements ServiceStatus {
     protected static final ObjectMapper mapper = new ObjectMapper();
     private static final Base64.Encoder encoder = Base64.getEncoder();
 
+    private String username;
     private String authorization;
     private String uri;
 
@@ -69,6 +70,7 @@ public class AbstractRESTClient implements ServiceStatus {
             url += '/';
         }
 
+        this.username = username;
         this.authorization = basicAuthorization(username, password);
         this.uri = url;
     }
@@ -272,5 +274,16 @@ public class AbstractRESTClient implements ServiceStatus {
             return null;
         }
         return "Basic " + encoder.encodeToString((username + ":" + password).getBytes());
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("REST client uri=");
+        builder.append(uri);
+        if (username != null) {
+            builder.append(" username=");
+            builder.append(username);
+        }
+        return builder.toString();
     }
 }

@@ -164,6 +164,10 @@ public class BatchTraceRecorder implements TraceRecorder {
         }
     }
 
+    public String toString() {
+        return "BatchTraceRecorder batchSize=" + batchSize + " [" + this.tracePublisher.toString() + "]";
+    }
+
     public static class BatchTraceRecorderBuilder {
         private int batchSize = DEFAULT_BATCH_SIZE;
         private int batchTime = DEFAULT_BATCH_TIME;
