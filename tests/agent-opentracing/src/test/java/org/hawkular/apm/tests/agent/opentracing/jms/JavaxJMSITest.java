@@ -128,12 +128,10 @@ public class JavaxJMSITest extends OpenTracingAgentTestBase {
         List<MockSpan> spans = getTracer().finishedSpans();
         assertEquals(3, spans.size());
 
-        assertEquals(Tags.SPAN_KIND_CLIENT, spans.get(0).tags().get(Tags.SPAN_KIND.getKey()));
-        assertEquals(Tags.SPAN_KIND_SERVER, spans.get(1).tags().get(Tags.SPAN_KIND.getKey()));
-        assertEquals(Tags.SPAN_KIND_SERVER, spans.get(2).tags().get(Tags.SPAN_KIND.getKey()));
-        assertEquals("topic://TestTopic", spans.get(0).tags().get("mom.url"));
-        assertEquals("topic://TestTopic", spans.get(1).tags().get("mom.url"));
-        assertEquals("topic://TestTopic", spans.get(2).tags().get("mom.url"));
+        assertEquals(1, spans.stream().filter(s -> s.tags().get(Tags.SPAN_KIND.getKey()).equals(Tags.SPAN_KIND_CLIENT)).count());
+        assertEquals(2, spans.stream().filter(s -> s.tags().get(Tags.SPAN_KIND.getKey()).equals(Tags.SPAN_KIND_SERVER)).count());
+        assertEquals(3, spans.stream().filter(s -> s.tags().containsKey("mom.url")).count());
+        assertEquals(1, spans.stream().map(s -> s.tags().get("mom.url")).distinct().count());
     }
 
     public class JMSQueueAsyncServer extends JMSAsyncServer {
