@@ -28,7 +28,7 @@
 
   <groupId>org.hawkular.apm</groupId>
   <artifactId>hawkular-apm</artifactId>
-  <version>0.14.4.Final-SNAPSHOT</version>
+  <version>0.14.4.Final</version>
   <packaging>pom</packaging>
 
   <name>Hawkular APM</name>
@@ -92,7 +92,7 @@
     <connection>scm:git:git://github.com/hawkular/hawkular-apm.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/hawkular/hawkular-apm.git</developerConnection>
     <url>https://github.com/hawkular/hawkular-apm</url>
-    <tag>HEAD</tag>
+    <tag>0.14.4.Final</tag>
   </scm>
   <issueManagement>
     <url>https://issues.jboss.org/browse/HWKAPM</url>
