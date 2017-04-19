@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.opentracing.impl;
 
 import java.util.HashMap;
