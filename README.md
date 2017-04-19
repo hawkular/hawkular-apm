@@ -5,33 +5,23 @@ Hawkular-APM
 [![Jira Issues](https://img.shields.io/badge/Jira-issues-blue.svg)](https://issues.jboss.org/projects/HWKAPM/issues)
 [![Join the chat at freenode:hawkular](https://img.shields.io/badge/irc-freenode%3A%20%23hawkular-blue.svg)](http://webchat.freenode.net/?channels=%23hawkular)
 
-is the **Application Performance Management** solution offering:
+Hawkular APM is the **Application Performance Management** solution offering:
 
 * Distributed Tracing (e.g. for microservices)
 * Application Performance Management
 * Business Transaction Management (currently only using JVM javaagent based approach)
 
-Applications can be instrumented, using a non-intrusive Java agent approach for JVM based applications, or through
-[Zipkin client libraries](http://zipkin.io/pages/existing_instrumentations.html) (for polyglot environment).
+Applications can be instrumented using the [OpenTracing standard API](http://opentracing.io/), optionally with the help of
+framework integrations and a non-intrusive Java Agent, that can be found
+in the [OpenTracing contrib organization](https://github.com/opentracing-contrib). It is also possible to use Hawkular
+APM as an alternative backend for [Zipkin client libraries](http://zipkin.io/pages/existing_instrumentations.html).
 
-In other words Hawkular APM provides the capabilities to monitor the flow of invocations
+Hawkular APM provides the capabilities to monitor the flow of invocations
 across servers, tiers, on-premises and in the cloud. It also enables detailed
 performance analysis to be performed of the individual components that make up an
 application.
 
-Running the latest version in OpenShift
----
-
-A Docker image with the latest released version of Hawkular APM is published to Docker Hub. Additionally,
-we keep a set of files that can be used in conjunction with OpenShift, to enable a quick and easy way to
-start a new Hawkular APM instance. If you want to start this way, this is what you'll need:
-
-```shell
-docker-machine create -d virtualbox --virtualbox-memory 8192 --virtualbox-cpu-count 4 --engine-insecure-registry 172.30.0.0/16 openshift
-oc cluster up --docker-machine=openshift
-oc create -f https://raw.githubusercontent.com/jboss-dockerfiles/hawkular-apm/master/openshift-templates/hawkular-apm-server-deployment.yml
-```
-Note: you should be able to start with a simple `oc cluster up`, but allocating more power to the underlying `docker-machine` is a good idea.
+Project documentation can be found [here](https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/).
 
 Build & Run
 -----------
@@ -57,11 +47,6 @@ $ source dist/target/hawkular-apm-${version}/apm/setenv.sh <APM server port>
 
 -> restart your Java applications
 ```
-
-Documentation
--------------
-
-Project documentation can be found [here](https://hawkular.gitbooks.io/hawkular-apm-user-guide/content/).
 
 REST API documentation can be generated using `-Pdocgen` profile. The doc is generated under `rest/target` folder.
 
