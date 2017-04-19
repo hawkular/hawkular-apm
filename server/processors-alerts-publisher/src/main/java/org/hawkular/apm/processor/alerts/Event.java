@@ -106,8 +106,13 @@ public class Event {
         if (properties != null && properties.size() > 0) {
             properties.stream().filter(p -> p.getValue() != null).forEach(p -> {
                 String value = getTags().get(p.getName());
-                getTags().put(p.getName(), value == null ? p.getValue()
-                        : String.format("%s,%s", value, p.getValue()));
+                // 如果value为空则不放入标签，仅记录下warn
+                if (p.getValue() != null) {
+                    getTags().put(p.getName(), value == null ? p.getValue()
+                            : String.format("%s,%s", value, p.getValue()));
+                }else{
+
+                }
             });
         }
     }
