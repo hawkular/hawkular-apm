@@ -16,7 +16,10 @@
  */
 package org.hawkular.apm.examples.vertx.opentracing.ordermanager;
 
+import org.hawkular.apm.examples.vertx.opentracing.common.TracerResolver;
+
 import io.opentracing.Span;
+import io.opentracing.Tracer;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
@@ -26,6 +29,8 @@ import io.vertx.ext.web.RoutingContext;
  * @author Juraci Paixão Kröhling
  */
 abstract class BaseHandler implements Handler<RoutingContext> {
+    Tracer tracer = TracerResolver.get("order-manager");
+
     void sendError(int statusCode, String message, HttpServerResponse response, Span span) {
         response.setStatusCode(statusCode).end(message);
         if (span != null) {

@@ -63,6 +63,10 @@
       <groupId>org.hawkular.apm</groupId>
       <artifactId>hawkular-apm-trace-publisher-rest-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.uber.jaeger</groupId>
+      <artifactId>jaeger-core</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

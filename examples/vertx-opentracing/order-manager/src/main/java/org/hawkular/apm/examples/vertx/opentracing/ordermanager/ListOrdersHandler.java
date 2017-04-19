@@ -18,13 +18,11 @@ package org.hawkular.apm.examples.vertx.opentracing.ordermanager;
 
 import java.util.logging.Logger;
 
-import org.hawkular.apm.client.opentracing.APMTracer;
 import org.hawkular.apm.examples.vertx.opentracing.common.HttpHeadersExtractAdapter;
 import org.hawkular.apm.examples.vertx.opentracing.common.VertxMessageInjectAdapter;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
@@ -38,7 +36,6 @@ import io.vertx.ext.web.RoutingContext;
  */
 class ListOrdersHandler extends BaseHandler implements Handler<RoutingContext> {
     private static final Logger logger = Logger.getLogger(ListOrdersHandler.class.getName());
-    private Tracer tracer = new APMTracer();
 
     @Override
     public void handle(RoutingContext context) {

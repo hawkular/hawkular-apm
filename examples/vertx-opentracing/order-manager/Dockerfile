@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,8 @@ FROM openjdk:8-jdk
 MAINTAINER Juraci Paixão Kröhling <jpkroehling+docker@redhat.com>
 
 ENV APP_HOME /app/
+ENV JAEGER_SERVER_URL jaeger-all-in-one
+ENV USE_JAEGER false
 
 COPY target/hawkular-apm-examples-vertx-opentracing-order-manager-fat.jar $APP_HOME
 
