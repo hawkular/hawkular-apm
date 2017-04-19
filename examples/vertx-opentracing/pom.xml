@@ -33,6 +33,7 @@
 
   <properties>
     <version.io.vertx>3.3.3</version.io.vertx>
+    <version.com.uber.jaeger.core>0.17.0</version.com.uber.jaeger.core>
   </properties>
 
   <modules>
@@ -59,6 +60,11 @@
         <groupId>io.vertx</groupId>
         <artifactId>vertx-tcp-eventbus-bridge</artifactId>
         <version>${version.io.vertx}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.uber.jaeger</groupId>
+        <artifactId>jaeger-core</artifactId>
+        <version>${version.com.uber.jaeger.core}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

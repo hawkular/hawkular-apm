@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.hawkular.apm.client.opentracing.APMTracer;
+import org.hawkular.apm.examples.vertx.opentracing.common.TracerResolver;
 import org.hawkular.apm.examples.vertx.opentracing.common.VertxMessageExtractAdapter;
 
 import io.opentracing.Span;
@@ -39,8 +39,9 @@ import io.vertx.core.json.JsonObject;
  * @author Juraci Paixão Kröhling
  */
 public class InventoryManagerVerticle extends AbstractVerticle {
+    private Tracer tracer = TracerResolver.get("inventory-manager");
+
     private static final Logger logger = Logger.getLogger(InventoryManagerVerticle.class.getName());
-    private Tracer tracer = new APMTracer();
     private Map<String, JsonObject> items = new HashMap<>();
 
     public static void main(String[] args) {

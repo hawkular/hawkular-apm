@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -48,6 +48,12 @@
       failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
       changed_when: "'exists' not in command_result.stderr"
 
+    - name: Install Jaeger (this might take a while)
+      shell: "oc process -f https://raw.githubusercontent.com/pavolloffay/jaeger/41aab634dc0ef37273aa8f5aa1e1a294b45f6baa/cmd/standalone/jaeger-all-in-one-openshift-template.yml | oc create -f -"
+      register: command_result
+      failed_when: "'exists' not in command_result.stderr and command_result.rc != 0"
+      changed_when: "'exists' not in command_result.stderr"
+
     - name: Create OpenShift new-build
       shell: "oc new-build --binary --name={{ item.name }} -l app={{ item.name }}"
       register: command_result
@@ -60,7 +66,7 @@
       with_items: "{{ services }}"
 
     - name: Create OpenShift applications from previously created images
-      shell: "oc new-app {{ item.name }} -l app={{ item.name }} HAWKULAR_APM_URI='http://hawkular-apm' HAWKULAR_APM_USERNAME='admin' HAWKULAR_APM_PASSWORD='password'"
+      shell: "oc new-app {{ item.name }} -l app={{ item.name }} HAWKULAR_APM_URI='http://hawkular-apm' HAWKULAR_APM_USERNAME='admin' HAWKULAR_APM_PASSWORD='password' JAEGER_SERVER_URL=jaeger-all-in-one USE_JAEGER=false"
       args:
         chdir: "{{ item.name }}"
       register: command_result

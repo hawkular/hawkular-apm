@@ -21,13 +21,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.hawkular.apm.client.opentracing.APMTracer;
 import org.hawkular.apm.examples.vertx.opentracing.common.HttpHeadersExtractAdapter;
 import org.hawkular.apm.examples.vertx.opentracing.common.VertxMessageInjectAdapter;
 
 import io.opentracing.Span;
 import io.opentracing.SpanContext;
-import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpServerResponse;
@@ -41,7 +39,6 @@ import io.vertx.ext.web.RoutingContext;
 class PlaceOrderHandler extends BaseHandler implements Handler<RoutingContext> {
     private static final Logger logger = Logger.getLogger(ListOrdersHandler.class.getName());
     private Map<String, JsonObject> orders = new HashMap<>();
-    private Tracer tracer = new APMTracer();
 
     @Override
     public void handle(RoutingContext routingContext) {

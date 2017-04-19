@@ -1,5 +1,5 @@
 #
-# Copyright 2015-2016 Red Hat, Inc. and/or its affiliates
+# Copyright 2015-2017 Red Hat, Inc. and/or its affiliates
 # and other contributors as indicated by the @author tags.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ project_name: order-manager
 create_openshift_cluster: true
 
 # try `latest` as well :)
-openshift_version: v1.3.1
+openshift_version: latest
 
 # try `true` as well!
 openshift_use_metrics: false
