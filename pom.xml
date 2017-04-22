@@ -603,6 +603,7 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <excludes combine.children="append">
+            <exclude>Makefile</exclude>
             <exclude>**/*.data</exclude>
             <exclude>**/*.deployed</exclude>
             <exclude>**/.babelrc</exclude>
