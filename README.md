@@ -1,6 +1,9 @@
 Hawkular-APM
 ============
 
+This project is now ARCHIVED and deprecated in favor of [CNCF's Jaeger](https://github.com/jaegertracing/jaeger).
+See our announcement [blog post](http://www.hawkular.org/blog/2017/04/19/hawkular-apm-jaeger.html) for more details.
+
 [![Travis](https://travis-ci.org/hawkular/hawkular-apm.svg?branch=master)](https://travis-ci.org/hawkular/hawkular-apm)
 [![Jira Issues](https://img.shields.io/badge/Jira-issues-blue.svg)](https://issues.jboss.org/projects/HWKAPM/issues)
 [![Join the chat at freenode:hawkular](https://img.shields.io/badge/irc-freenode%3A%20%23hawkular-blue.svg)](http://webchat.freenode.net/?channels=%23hawkular)
